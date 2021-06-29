@@ -36,3 +36,150 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Container holding the image and the text */
+.memeContainer {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+
+/* Bottom left text */
+.bottom-left {
+  position: absolute;
+  bottom: 8px;
+  left: 16px;
+}
+
+/* Top left text */
+.top-left {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+}
+
+/* Top right text */
+.top-right {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+}
+
+/* Bottom right text */
+.bottom-right {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+}
+
+/* Centered text */
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Top right text */
+.top_rigth_2texts {
+  position: absolute;
+  top: 80px;
+  right: 50px;
+  /* background-color: black; */
+  color: black;
+  padding-left: 20px;
+  padding-right: 20px;
+  word-wrap: break-word;
+  max-width:250px;
+
+}
+
+/* Bottom right text */
+.bottom_right_2texts {
+  position: absolute;
+  bottom: 80px;
+  right: 50px;
+  /* background-color: black; */
+  color: black;
+  padding-left: 20px;
+  padding-right: 20px;
+  word-wrap: break-word;
+  max-width:250px;
+
+}
+
+/* Bottom right text */
+.center_bottom {
+  position: absolute;
+  bottom: 40px;
+  right: 210px;
+  /* background-color: black; */
+  color: black;
+  word-wrap: break-word;
+  max-width:300px;
+
+}
+
+
+/*Spongebob Meme Text*/
+
+.top_rigth_3texts {
+  position: absolute;
+  top: 75px;
+  right: 145px;
+  color: black;
+  /* background-color: black; */
+  padding-left: 20px;
+  padding-right: 20px;
+  word-wrap: break-word;
+  max-width:500px;
+
+}
+
+.center_rigth_3texts {
+  position: absolute;
+  top: 235px;
+  right: 145px;
+  color: black;
+  /* background-color: black; */
+  padding-left: 20px;
+  padding-right: 20px;
+  word-wrap: break-word;
+  max-width:500px;
+
+}
+/* Bottom right text */
+.bottom_rigth_3texts {
+  position: absolute;
+  bottom: 75px;
+  right: 145px;
+  color: black;
+  /* background-color: black; */
+  padding-left: 20px;
+  padding-right: 20px;
+  word-wrap: break-word;
+  max-width:500px;
+
+}
+
+.font1 {
+  font-family: Impact, fantasy;
+  font-weight: bold;
+  font-size: 30px;
+  text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+}
+
+.font2 {
+  font-family: "DejaVu Sans Mono", monospace	;
+}
+
+.font3 {
+  font-family: Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  color: white;
+  text-shadow: 2px 0 0 rgb(0, 0, 0), -2px 0 0 rgb(0, 0, 0), 0 2px 0 rgb(0, 0, 0), 0 -2px 0 rgb(0, 0, 0), 1px 1px rgb(0, 0, 0), -1px -1px 0 rgb(0, 0, 0), 1px -1px 0 rgb(0, 0, 0), -1px 1px 0 rgb(0, 0, 0);
+
+}

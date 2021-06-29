@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { Navbar, Nav,Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { LogoutButton,LoginButton } from './MyLogin';
+
 
 function MyNavBar(props) {
     return (
