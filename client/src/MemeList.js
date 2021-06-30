@@ -160,8 +160,10 @@ function NewMemeModal(props) {
 
   //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base
   const handleSentences = (ev, i) => {
-    //Se trovo gia l'elemento iesimo devo aggiornarlo
-    sentences[i] ? setSentences(oldSentences => {
+    console.log(ev.target.value, i, sentences[i])
+    //Se trovo gia l'elemento iesimo devo aggiornarlo -> Vedo se è diversa solo da undefined perchè potrebbe anche essere una stringa
+    //vuota nel caso in cui cancello tutto dal testo e non passerebbe un normale controllo sentences[i]?
+    sentences[i]!==undefined ? setSentences(oldSentences => {
       //s-> singola frase, j indice della map
       return oldSentences.map((s, j) => {
         if (i === j) {
@@ -169,8 +171,15 @@ function NewMemeModal(props) {
           return ev.target.value;
         } else return s;
       })
-    }) : setSentences(oldSentences => [...oldSentences, ev.target.value]);
-    //altrimenti devo crearlo
+    }) : setSentences(oldSentences =>
+      [
+        ...oldSentences.slice(0, i),     // first half
+        ev.target.value,                       // items to be inserted
+        ...oldSentences.slice(i)         // second half
+      ]
+    );
+    //altrimenti devo crearlo -> Per la gestione delle frasi di un templates, e quelle conservate in questo stato, è necessario che gli indici
+    //delle rispettive frasi corrispondano, per cui è necessario aggiungere l'elemento alla stessa posizione del template
   }
   const handleChangeTemplate = (newTemplate) => {
     //Cambio il meme corrente con uquello selezionato
@@ -203,28 +212,44 @@ function NewMemeModal(props) {
         </Form.Group>
         <Form.Group controlId="exampleForm.ControlSelect1">
           <Form.Label>Choose a template to start...</Form.Label>
-
-            {props.memeTemplates && props.memeTemplates.map((mT) => {
-              <img width={50} height={50} src={process.env.PUBLIC_URL + mT.img} onClick={() => { handleChangeTemplate(mT) }}></img>
+          <Container>
+            {props.memeTemplates && props.memeTemplates.map((mT, index) => {
+              return <img width={50} height={50} key={index}
+                src={process.env.PUBLIC_URL + mT.img} onClick={() => { handleChangeTemplate(mT) }}></img>
             })}
+          </Container>
+
 
         </Form.Group>
-        <Container>
-          {currentMemeTemplate ? <img src={currentMemeTemplate.img} ></img> : null}
-          {/* Per ognuno dei testi del template selezionato visualizzo il form */}
-          {currentMemeTemplate.sentences ? currentMemeTemplate.sentences.map((s, index) => {
-            <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
-              <Form.Label column sm="2">
-                Text n.{index}
-              </Form.Label>
-              <Col sm="10">
-                {/* Quando compilo un testo devo modificare lo stato delle sentences andando a settarlo come ciò che è stato scritto */}
-                <Form.Control value={sentences[index] ? sentences[index] : ""}
-                  onChange={(ev) => handleSentences(ev, index)} />
-              </Col>
-            </Form.Group>
-          }) : null}
-        </Container>
+        {
+          currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
+            <>
+              <figure className="position-relative memeContainer">
+                <img className="img-fluid" src={currentMemeTemplate.img} ></img>
+                {currentMemeTemplate.sentences.map((s, index) => {
+                  return <figcaption className={s.position} key={index}>
+                    {sentences[index]}</figcaption>
+                  // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
+                  //al momento della creazione di sentences
+                })}
+              </figure>
+              <Container fluid >
+                {/* Per ognuno dei testi del template selezionato visualizzo il form */}
+                {currentMemeTemplate.sentences.map((s, index) => {
+                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
+                    <Form.Label column sm="2">
+                      Text n.{index}
+                    </Form.Label>
+                    <Col sm="10">
+                      {/* Quando compilo un testo devo modificare lo stato delle sentences andando a settarlo come ciò che è stato scritto */}
+                      <Form.Control value={sentences[index] ? sentences[index] : ""}
+                        onChange={(ev) => handleSentences(ev, index)} />
+                    </Col>
+                  </Form.Group>
+                })}
+              </Container>
+            </> : null
+        }
       </Form>
     </Modal.Body>
     <Modal.Footer>
