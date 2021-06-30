@@ -29,6 +29,8 @@ function App() {
   ]);
 
   //Stato contenente i template dei meme disponibili sulla pagina da creare
+  //La scelta è quella di avere dei font e dei colori disponibili per tutti e non per ogni tipo di meme per cui non è necessario
+  //salvare questa info nel template, mentre va tenuta nei meme veri e propri
   const [memeTemplates, setMemeTemplates] = useState([
     {
       id: 1, nome: "Drake", img: "drake.png",
@@ -47,17 +49,28 @@ function App() {
   //Mantiene l'utente corrente (Per mostrare i meme personali, cancellarli e crearli)
   const [currentUser, setCurrentUser] = useState({ id: 2, name: "Carlo" });
 
+
+  //Logica applicativa
+  //Aggiunta di un nuovo meme
+  const addMeme = (meme) => {
+    //meme.status = 'added';
+    setMeme((oldMeme) => [...oldMeme, meme]);
+
+    // API.addTask(task)
+    //   .then(() => setDirty(true))
+  };
+
   return (
     <Router>
       <MyNavBar />
       <Switch>
-        {/*Route home visualizzatore -> Vengono visualizzate i meme già creati*/}
+        {/*Route home visualizzatore -> Vengono visualizzate i meme già creati pubblici*/}
         <Route exact path='/' render={() =>
           <Container fluid className="vh-100">
             <Row className="h-100">
               <Container fluid className="p-4">
                 <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                <MemeList meme={meme} />
+                <MemeList meme={meme.filter((m) => m.visibility===1)} />
               </Container>
             </Row>
           </Container>
@@ -77,6 +90,8 @@ function App() {
                   visibility: 1, creator: { id: currentUser.id, name: currentUser.name }
                 })}
                   memeTemplates={memeTemplates}
+                  addMeme={addMeme}
+                  currentUser={currentUser}
                 />
               </Container>
             </Row>

@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { useState } from 'react';
-import { Col, Row, Container, Card, Button, ListGroup, Modal, Form, Figure } from 'react-bootstrap';
+import { Col, Row, Container, Card, Button, ListGroup, Modal, Form, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 function MemeList(props) {
@@ -41,21 +41,21 @@ function MemeList(props) {
         onHide={handleModalNewMeme}
         meme={currentMeme}
         memeTemplates={props.memeTemplates}
+        addMeme={props.addMeme}
+        currentUser={props.currentUser}
       />
       <ListGroup horizontal={"sm"} className="d-flex flex-wrap mb-3">
         {
 
           props.meme.map((m, index) => {
-            if (m.visibility) {
-              return <ListGroup.Item key={index} className=" m-3">
-                <MemeCard
-                  meme={props.meme[index]}
-                  handleChangeMeme={handleChangeMeme}
-                  handleModalNewMeme={handleModalNewMeme}
-                >
-                </MemeCard  >
-              </ListGroup.Item>
-            } else return null
+            return <ListGroup.Item key={index} className=" m-3">
+              <MemeCard
+                meme={props.meme[index]}
+                handleChangeMeme={handleChangeMeme}
+                handleModalNewMeme={handleModalNewMeme}
+              >
+              </MemeCard  >
+            </ListGroup.Item>
           })
         }
 
@@ -123,20 +123,6 @@ function MemeSelectedModal(props) {
           : null}
 
       </Container>
-      <Form>
-        {/*{props.sentences.map((s,index) => {
-              <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
-                <Form.Label column sm="2">
-                  Sentences n.{index}
-                  (Cordinate x={s.x},y={s.y})
-                </Form.Label>
-                <Col sm="10">
-                  <Form.Control plaintext readOnly defaultValue={s.text} />
-                </Col>
-              </Form.Group>
-            })}
-          */}
-      </Form>
     </Modal.Body>
     <Modal.Footer>
       <Button variant="secondary" onClick={() => props.onHide(false)}>
@@ -149,21 +135,41 @@ function MemeSelectedModal(props) {
 
 function NewMemeModal(props) {
 
+  //Contiene l'eventuale errore che non permette di effettuare il submit
+  const [error, setError] = useState("");
+
+
+  //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
+  const [visibility, setVisibility] = useState(0);
+  const handleVisibility = () => {
+    setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
+  }
+
+
+  //Contiene il colore del meme in fase di creazione
+  const [color, setColor] = useState("Black");
+  //Contiene il font del meme in fase di creazione
+  const [font, setFont] = useState("font1");
+
+
   //Contiene il template del meme selezionato. Il suo aggiornamento comporta la pulizia delle frasi compilate
   const [currentMemeTemplate, setCurrentMemeTemplate] = useState({});
+
 
   //Titolo del meme in fase di creazione. Viene salvato sul db solo all'atto di creazione effettiva
   const [title, setTitle] = useState("");
 
+
   //Contiene esclusivamente i testi dell'immagine selezionata che vengono compilati
   const [sentences, setSentences] = useState([]);
+
 
   //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base
   const handleSentences = (ev, i) => {
     console.log(ev.target.value, i, sentences[i])
     //Se trovo gia l'elemento iesimo devo aggiornarlo -> Vedo se è diversa solo da undefined perchè potrebbe anche essere una stringa
     //vuota nel caso in cui cancello tutto dal testo e non passerebbe un normale controllo sentences[i]?
-    sentences[i]!==undefined ? setSentences(oldSentences => {
+    sentences[i] !== undefined ? setSentences(oldSentences => {
       //s-> singola frase, j indice della map
       return oldSentences.map((s, j) => {
         if (i === j) {
@@ -181,11 +187,66 @@ function NewMemeModal(props) {
     //altrimenti devo crearlo -> Per la gestione delle frasi di un templates, e quelle conservate in questo stato, è necessario che gli indici
     //delle rispettive frasi corrispondano, per cui è necessario aggiungere l'elemento alla stessa posizione del template
   }
+
+
   const handleChangeTemplate = (newTemplate) => {
     //Cambio il meme corrente con uquello selezionato
     setCurrentMemeTemplate(newTemplate);
     //Cambiando base, cambiano anche i testi
     setSentences([]);
+  }
+
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    //Variabile che mi permette di sapere se ho trovato errori
+    var err = false;
+    //VALIDAZIONE
+
+    //Almeno un testo deve essere presente(controllo sia undefined sia vettore vuoto) +
+    //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
+    if (sentences && sentences.length !== 0) {
+      sentences.map((s) => {
+        if (s.length > 100) {
+          err = true;
+          setError("You seem to have written too large text, please edit it");
+        }
+      })
+    } else {
+      //Vettore vuoto o indefinito
+      setError("Please, write at least one text");
+      err = true;
+    }
+
+    //Il titolo è obbligatorio + Titolo almeno 5 caratteri
+    if (!title || title.length < 5) {
+      err = true;
+      setError("The title is mandatory and must contain at least 5 characters")
+    } else if (title.length > 20) {
+      err = true;
+      setError("Title is too large, please edit it");
+    }
+
+    if (!err) {
+      //NESSUNA VIOLAZIONE DI VINCOLO -> Creo nuovo meme e lo aggiungo a quelli disponibili -> L'Id sarà definito dal db
+      const meme = {
+        title: title, img: currentMemeTemplate.img,
+        sentences: [currentMemeTemplate.sentences.map((s, index) => {
+          return {
+            text: sentences[index] ? sentences[index] : "",
+            postition: s.position
+          }
+        })],
+        font: font, color: color, visibility: visibility, creator: props.currentUser
+      };
+
+      //Aggiungo il nuovo meme alla lista dei tast
+      props.addMeme(meme);
+      props.onHide(false);
+    }
+
+
   }
 
   return <Modal
@@ -201,6 +262,7 @@ function NewMemeModal(props) {
     </Modal.Header>
     <Modal.Body>
       <Form>
+        {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
         <Form.Group as={Row} controlId="formPlaintextCreator">
           <Form.Label column sm="2">
             Title:
@@ -227,7 +289,7 @@ function NewMemeModal(props) {
               <figure className="position-relative memeContainer">
                 <img className="img-fluid" src={currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <figcaption className={s.position} key={index}>
+                  return <figcaption className={s.position + " " + font + " " + color} key={index}>
                     {sentences[index]}</figcaption>
                   // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
                   //al momento della creazione di sentences
@@ -250,13 +312,45 @@ function NewMemeModal(props) {
               </Container>
             </> : null
         }
+        <Form.Group>
+          <Form.Group controlId="exampleForm.ControlSelect1">
+            <Form.Label>Choose your favorite font?</Form.Label>
+            <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
+              <option>font1</option>
+              <option>font2</option>
+              <option>font3</option>
+              <option>font4</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Group>
+        <Form.Group>
+          <Form.Group controlId="exampleForm.ControlSelect2">
+            <Form.Label>Choose a color for the text?</Form.Label>
+            <Form.Control as="select" value={color} onChange={(ev) => setColor(ev.target.value)}>
+              <option>Black</option>
+              <option>White</option>
+              <option>Red</option>
+              <option>Blue</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Group>
+        <Form.Group>
+          <Form.Check
+
+            type="checkbox"
+            label="Click here if you want to make this meme public"
+            value={visibility}
+            checked={visibility}
+            onChange={handleVisibility}
+          />
+        </Form.Group>
       </Form>
     </Modal.Body>
     <Modal.Footer>
       <Button variant="secondary" onClick={() => props.onHide(false)}>
         Close
       </Button>
-      <Button variant="primary">Save</Button>
+      <Button variant="primary" onClick={handleSubmit}>Publish</Button>
     </Modal.Footer>
   </Modal>
 }
