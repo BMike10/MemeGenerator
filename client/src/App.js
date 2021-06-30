@@ -6,25 +6,34 @@ import MemeList from './MemeList';
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import Meme from './Meme';
+
+//PROBLEMA1 : Perchè ogni volta non riesce una map o una filter di uno stato nonostante fossero questi sempre inizializzati?
+//SOLUZIONE1 : Il problema nasce dal fatto che le proprietà passate agli stessi componenti sono differenti in molti casi, per cui 
+//se alla prima MemeList non passo ad esempio i memeTemplate, quello non ha alcuna proprietà di quel tipo, e quando andrà a valutarla 
+//si ritroverà un undefined. Per risolvere questo problema ci sono due soluzioni, o le proprietà vengono passate sempre ma modificandone il 
+//contenuto, oppure si fa sempre un controllo per valutare se esiste quella proprietà -> Ho scelto la seconda
+
 
 function App() {
+
+  const [loggedIn, setLoggedIn] = useState(true);
+
 
   //Stato contenente i meme disponibili sulla pagina
   const [meme, setMeme] = useState([
     {
       id: 1, title: "Meme1", img: "drake.png",
       sentences: [{ text: "Studiare tutta la settimana per poi consegnare e non cominciare di nuovo tutto da capo", position: "top_rigth_2texts" }, { text: "Studiare tutta la settimana per poi non consegnare e perdere tutto il lavoro", position: "bottom_right_2texts" }],
-      font: "font2", color: "", visibility: 1, creator: { id: 1, name: "Michele" }
+      font: "font2", color: "", visibility: 1, creator: { id: 1, name: "Michele" }, templateId: 1
     },
     {
       id: 2, title: "Meme2", img: "pacha-meme.jpg",
-      sentences: [{ text: "Vieira: L'Italia non andrà avanti", position: "center_bottom" }], font: "font1", color: "", visibility: 1, creator: { id: 2, name: "Carlo" }
+      sentences: [{ text: "Vieira: L'Italia non andrà avanti", position: "center_bottom" }], font: "font1", color: "", visibility: 1, creator: { id: 2, name: "Carlo" }, templateId: 2
     },
     {
       id: 3, title: "Meme3", img: "spongebob1.jpg",
       sentences: [{ text: "Ingegneri vs Ingegneri", position: "top_rigth_3texts" }, { text: "Ingegneri vs Architetti", position: "center_rigth_3texts" }, { text: "Ingegneri vs Gestionali", position: "bottom_rigth_3texts" }], font: "font2", color: "",
-      visibility: 1, creator: { id: 2, name: "Carlo" }
+      visibility: 1, creator: { id: 2, name: "Carlo" }, templateId: 3
     },
   ]);
 
@@ -60,6 +69,25 @@ function App() {
     //   .then(() => setDirty(true))
   };
 
+  //Eliminazione di un meme
+  const deleteMeme = (id) => {
+    setMeme(oldMeme => oldMeme.filter((m) => m.id !== id));
+    //return oldMeme.map(meme => {
+    //if (meme.id === id)
+    //Questo mi permetterà di vederlo ad esempio in rosso, non lo sto eliminando in realtà. Lo eliminerò direttamente dal db 
+    //e farò in modo che la useEffect ricarichi i meme, in questo modo il meme eliminato non ci sarà più
+    // return { ...meme, status: 'deleted' };
+    //Per il momento visto che non c'è ancora il server lo eliminiamo sul serio
+
+    //else
+    //return task;
+    //});
+    //});
+    // API.deleteTask(id)
+    //   .then(() => setDirty(true));
+  };
+
+
   return (
     <Router>
       <MyNavBar />
@@ -70,7 +98,7 @@ function App() {
             <Row className="h-100">
               <Container fluid className="p-4">
                 <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                <MemeList meme={meme.filter((m) => m.visibility===1)} />
+                <MemeList meme={meme.filter((m) => m.visibility === 1)} />
               </Container>
             </Row>
           </Container>
@@ -82,7 +110,35 @@ function App() {
             <Row className="h-100">
               <Container fluid className="p-4">
                 <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                <MemeList meme={meme} />
+                <MemeList meme={meme} loggedIn={loggedIn}
+                />
+                <h2 className="fs-1">My funny meme!</h2>
+                <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
+                  id: undefined, title: "Create new meme", img: "make-meme.jpg",
+                  sentences: [], font: "font2", color: "",
+                  visibility: 1, creator: { id: currentUser.id, name: currentUser.name }
+                })}
+                  loggedIn={loggedIn}
+                  memeTemplates={memeTemplates}
+                  addMeme={addMeme}
+                  deleteMeme={deleteMeme}    //Delete meme è passato solo da questa pagina e con questo componente,
+                  // Tutti gli altri non avranno questa props(sarà undefined)
+                  currentUser={currentUser}
+                />
+              </Container>
+            </Row>
+          </Container>
+        }>
+        </Route>
+        {/*Route home admin -> Viene visualizzata la lista di home ma con il modale aperto per la modifica del meme copiato
+          Mi servo di una route perchè mi permette di passare lo stato dell'oggetto*/}
+
+        <Route path='/copy' render={() =>
+          <Container fluid className="vh-100">
+            <Row className="h-100">
+              <Container fluid className="p-4">
+                <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
+                <MemeList meme={meme} copyMeme={addMeme}/>
                 <h2 className="fs-1">My funny meme!</h2>
                 <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
                   id: undefined, title: "Create new meme", img: "make-meme.jpg",
@@ -90,13 +146,14 @@ function App() {
                   visibility: 1, creator: { id: currentUser.id, name: currentUser.name }
                 })}
                   memeTemplates={memeTemplates}
-                  addMeme={addMeme}
+                  //In nome della props varia in modo da distinguerlo all'interno del componente,
+                  //ma la funzione è identica a quella della add. Le differenze sono tutte gestite internamente
+                  copyMeme={addMeme}
                   currentUser={currentUser}
                 />
               </Container>
             </Row>
-          </Container>
-        }>
+          </Container>}>
         </Route>
       </Switch>
     </Router >

@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { useState } from 'react';
 import { Col, Row, Container, Card, Button, ListGroup, Modal, Form, Alert } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 function MemeList(props) {
 
@@ -19,8 +19,9 @@ function MemeList(props) {
     setModalShowSelectedMeme(show);
   }
 
-  //Visualizzazione del modale per la creazione di un nuovo meme
-  const [modalShowNewMeme, setModalShowNewMeme] = useState(false);
+  //Visualizzazione del modale per la creazione di un nuovo meme -> Nel caso in cui sono sulla pagina della copia
+  //mi viene passata(solo in quel caso) la props copyMeme. In quel caso il modale dovrà essere mostrato
+  const [modalShowNewMeme, setModalShowNewMeme] = useState(props.copyMeme ? true : false);
   const handleModalNewMeme = (show) => {
     setModalShowNewMeme(show);
   }
@@ -40,7 +41,7 @@ function MemeList(props) {
         show={modalShowNewMeme}
         onHide={handleModalNewMeme}
         meme={currentMeme}
-        memeTemplates={props.memeTemplates}
+        memeTemplates={props.memeTemplates? props.memeTemplates : undefined}
         addMeme={props.addMeme}
         currentUser={props.currentUser}
       />
@@ -51,8 +52,11 @@ function MemeList(props) {
             return <ListGroup.Item key={index} className=" m-3">
               <MemeCard
                 meme={props.meme[index]}
+                memeTemplate={props.memeTemplates? props.memeTemplates.filter((mt) => mt.id === m.templateId) : undefined}
                 handleChangeMeme={handleChangeMeme}
                 handleModalNewMeme={handleModalNewMeme}
+                deleteMeme={props.deleteMeme}
+                loggedIn={props.loggedIn}
               >
               </MemeCard  >
             </ListGroup.Item>
@@ -74,9 +78,22 @@ function MemeCard(props) {
         <Card.Text>
           Created by: {props.meme.creator.name}
         </Card.Text>
+        {/*Bottone per la copia del meme -> Se l'utente è loggato è un creator e da tale può copiare il meme*/}
+        {props.loggedIn ? <Link to={{
+          pathname: "/copy",
+          state: { id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, visibility: props.meme.visibility,
+            sentences: props.meme.sentences.map((s) => {
+              return s.text;
+            }), currentMemeTemplate: props.memeTemplate  }
+        }}><Button variant= "primary" onClick={ () => props.handleModalNewMeme(true)}>Copy the meme</Button>
+        </Link> : null}
         {/*Bottone per la visualizzazione del modale con il meme -> Se l'id è undefined si tratta della card per la creazione di un nuovo meme*/}
         {props.meme.id ? <Button variant="primary" onClick={() => props.handleChangeMeme(props.meme)}>View Meme</Button>
           : <Button variant="primary" onClick={() => props.handleModalNewMeme(true)}>Create new Meme</Button>}
+        {/* Se mi è stata inviata anche la props delete vuol dire che sono nel caso del creator e che voglio un ulteriore
+        pulsante per l'eliminazione dei meme da me creati. Questo pulsante non deve comparire nel caso della carta di creazione 
+        oovero quando l'id è undefined */}
+        {props.deleteMeme && props.meme.id ? <Button variant="danger" onClick={() => props.deleteMeme(props.meme.id)}>Delete Meme</Button> : null}
       </Card.Body>
     </Card>
   </>
@@ -135,33 +152,37 @@ function MemeSelectedModal(props) {
 
 function NewMemeModal(props) {
 
+  //Permette di salvare uno stato da usare quando sto copiando un meme
+  const location = useLocation();
+
+
   //Contiene l'eventuale errore che non permette di effettuare il submit
   const [error, setError] = useState("");
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(0);
+  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
   const handleVisibility = () => {
     setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
   }
 
 
   //Contiene il colore del meme in fase di creazione
-  const [color, setColor] = useState("Black");
+  const [color, setColor] = useState(location.state ? location.state.visibility : "Black");
   //Contiene il font del meme in fase di creazione
-  const [font, setFont] = useState("font1");
+  const [font, setFont] = useState(location.state ? location.state.font : "font1");
 
 
   //Contiene il template del meme selezionato. Il suo aggiornamento comporta la pulizia delle frasi compilate
-  const [currentMemeTemplate, setCurrentMemeTemplate] = useState({});
+  const [currentMemeTemplate, setCurrentMemeTemplate] = useState(location.state ? location.state.currentMemeTemplate : {});
 
 
   //Titolo del meme in fase di creazione. Viene salvato sul db solo all'atto di creazione effettiva
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(location.state ? location.state.title : "");
 
 
   //Contiene esclusivamente i testi dell'immagine selezionata che vengono compilati
-  const [sentences, setSentences] = useState([]);
+  const [sentences, setSentences] = useState(location.state ? location.state.sentences : []);
 
 
   //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base
