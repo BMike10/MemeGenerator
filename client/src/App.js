@@ -62,12 +62,6 @@ function App() {
   const [currentUser, setCurrentUser] = useState({ id: 2, name: "Carlo" });
 
 
-  //Stato per la visione del modale di copia
-  const [modalShowCopyMeme, setModalShowCopyMeme] = useState(true);
-  const handleModalShowCopyMeme = (show) => {
-    setModalShowCopyMeme(show);
-  } 
-
   //Logica applicativa
   //Aggiunta di un nuovo meme
   const addMeme = (meme) => {
@@ -150,7 +144,6 @@ function App() {
 
         <Route path='/home/copyMeme' render={() =>
           <>
-
             <Container fluid className="vh-100">
               <Row className="h-100">
                 <Container fluid className="p-4">
@@ -174,7 +167,8 @@ function App() {
                 </Container>
               </Row>
             </Container>
-            <CopyMemeModal show={modalShowCopyMeme} addMeme={addMeme} currentUser={currentUser} onHide={() => handleModalShowCopyMeme(false)}></CopyMemeModal>
+            <CopyMemeModal show={true} addMeme={addMeme} currentUser={currentUser}
+              addMeme={addMeme}></CopyMemeModal>
           </>
         }>
         </Route>

@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { useState } from 'react';
 import { Col, Row, Container, Card, Button, ListGroup, Modal, Form, Alert } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 
 function MemeList(props) {
 
@@ -29,7 +29,7 @@ function MemeList(props) {
     setModalShowNewMeme(show);
   }
 
-   //Visualizzazione del modale per la copia di un meme
+  //Visualizzazione del modale per la copia di un meme
   const [modalShowCopyMeme, setModalShowCopyMeme] = useState(location.state ? location.state.modalShowNewMeme : false);
   const handleModalCopyMeme = (show) => {
     setModalShowCopyMeme(show);
@@ -169,7 +169,7 @@ function NewMemeModal(props) {
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(location.state ? location.state.visibility :0);
+  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
   const handleVisibility = () => {
     setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
   }
@@ -267,7 +267,7 @@ function NewMemeModal(props) {
             postition: s.position
           }
         })],
-        font: font, color: color, visibility: visibility, creator: props.currentUser
+        font: font, color: color, visibility: visibility, creator: props.currentUser//Viene passato lo user corrente per cui cambia il proprietario
       };
 
       //Aggiungo il nuovo meme alla lista dei tast
@@ -386,14 +386,27 @@ function NewMemeModal(props) {
 
 function CopyMemeModal(props) {
 
+  //History serve per cambiare il path ma gestendo il tutto con una funzione, cosa che non mi permette di fare il link
+  //Questo è utile sia nel caso del close button, così da sfruttarlo nel onClick, sia alla submit
+  const history = useHistory();
+  const routeChange = () => {
+    let path = `/home`;
+    history.push(path);
+  }
+
+
   const location = useLocation();
 
   //Contiene l'eventuale errore che non permette di effettuare il submit
   const [error, setError] = useState("");
 
 
+  //Contiene il meme copiato, mi serve sopratutto per l'informazione sul suo creatore
+  const [currentMeme, setCurrentMeme] = useState(location.state ? location.state.currentMeme : {});
+
+
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(location.state ? location.state.visibility :0);
+  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
   const handleVisibility = () => {
     setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
   }
@@ -487,7 +500,7 @@ function CopyMemeModal(props) {
 
       //Aggiungo il nuovo meme alla lista dei tast
       props.addMeme(meme);
-      props.onHide(false);
+      routeChange();
     }
 
 
@@ -501,7 +514,7 @@ function CopyMemeModal(props) {
     size="lg"
     centered
   >
-    <Modal.Header closeButton onClick={() => props.onHide(false)} >
+    <Modal.Header closeButton onClick={routeChange}>
       <Modal.Title>Copying a meme...</Modal.Title>
     </Modal.Header>
     <Modal.Body>
@@ -575,18 +588,22 @@ function CopyMemeModal(props) {
             value={visibility}
             checked={visibility}
             onChange={handleVisibility}
+            //Se il meme è porprio la visibilità può essere cambiata in ogni caso
+            //Se il meme non è proprio, la visibilità può essere cambiato solo se è pubblico
+            //Si noti che non posso usare lo stato visibility, altrimenti al momento che questo cambia è diventa privato non riesco
+            //più a cambiarlo anche se all'inizio era pubblico
+            disabled={props.currentUser.id === currentMeme.creator.id ||
+              (location.state.currentMeme.visibility === 1 && props.currentUser.id !== currentMeme.creator.id) ? false : true}
           />
         </Form.Group>
       </Form>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={() => props.onHide(false)}>
-        Close
-      </Button>
-      <Button variant="primary" onClick={handleSubmit}>Publish</Button>
+      <Link to="/home"><Button variant="secondary" >Close</Button></Link>
+      <Link to="/home"><Button variant="primary" onClick={handleSubmit}>Publish</Button></Link>
     </Modal.Footer>
   </Modal>
 }
 
 
-export {MemeList, CopyMemeModal};
+export { MemeList, CopyMemeModal };
