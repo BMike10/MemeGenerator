@@ -6,8 +6,12 @@ import { Link, useLocation } from 'react-router-dom';
 
 function MemeList(props) {
 
+  //Permette di salvare uno stato da usare quando sto copiando un meme
+  const location = useLocation();
+
+
   //Contiene il meme selezionato e che deve essere visualizzato
-  const [currentMeme, setCurrentMeme] = useState({});
+  const [currentMeme, setCurrentMeme] = useState(location.state ? location.state.currentMeme : {});
   const handleChangeMeme = (meme) => {
     setCurrentMeme(meme);
     setModalShowSelectedMeme(true);
@@ -19,13 +23,17 @@ function MemeList(props) {
     setModalShowSelectedMeme(show);
   }
 
-  //Visualizzazione del modale per la creazione di un nuovo meme -> Nel caso in cui sono sulla pagina della copia
-  //mi viene passata(solo in quel caso) la props copyMeme. In quel caso il modale dovrà essere mostrato
-  const [modalShowNewMeme, setModalShowNewMeme] = useState(props.copyMeme ? true : false);
+  //Visualizzazione del modale per la creazione di un nuovo meme 
+  const [modalShowNewMeme, setModalShowNewMeme] = useState(false);
   const handleModalNewMeme = (show) => {
     setModalShowNewMeme(show);
   }
 
+   //Visualizzazione del modale per la copia di un meme
+  const [modalShowCopyMeme, setModalShowCopyMeme] = useState(location.state ? location.state.modalShowNewMeme : false);
+  const handleModalCopyMeme = (show) => {
+    setModalShowCopyMeme(show);
+  }
 
 
   return (
@@ -41,7 +49,7 @@ function MemeList(props) {
         show={modalShowNewMeme}
         onHide={handleModalNewMeme}
         meme={currentMeme}
-        memeTemplates={props.memeTemplates? props.memeTemplates : undefined}
+        memeTemplates={props.memeTemplates ? props.memeTemplates : undefined}
         addMeme={props.addMeme}
         currentUser={props.currentUser}
       />
@@ -52,7 +60,7 @@ function MemeList(props) {
             return <ListGroup.Item key={index} className=" m-3">
               <MemeCard
                 meme={props.meme[index]}
-                memeTemplate={props.memeTemplates? props.memeTemplates.filter((mt) => mt.id === m.templateId) : undefined}
+                memeTemplate={props.memeTemplates ? props.memeTemplates.filter((mt) => mt.id === m.templateId)[0] : undefined}
                 handleChangeMeme={handleChangeMeme}
                 handleModalNewMeme={handleModalNewMeme}
                 deleteMeme={props.deleteMeme}
@@ -80,12 +88,14 @@ function MemeCard(props) {
         </Card.Text>
         {/*Bottone per la copia del meme -> Se l'utente è loggato è un creator e da tale può copiare il meme*/}
         {props.loggedIn ? <Link to={{
-          pathname: "/copy",
-          state: { id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, visibility: props.meme.visibility,
+          pathname: "/home/copyMeme",
+          state: {
+            currentMeme: props.meme, modalShowCopyMeme: true, id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, visibility: props.meme.visibility,
             sentences: props.meme.sentences.map((s) => {
               return s.text;
-            }), currentMemeTemplate: props.memeTemplate  }
-        }}><Button variant= "primary" onClick={ () => props.handleModalNewMeme(true)}>Copy the meme</Button>
+            }), currentMemeTemplate: props.memeTemplate
+          }
+        }}><Button variant="primary">Copy the meme</Button>
         </Link> : null}
         {/*Bottone per la visualizzazione del modale con il meme -> Se l'id è undefined si tratta della card per la creazione di un nuovo meme*/}
         {props.meme.id ? <Button variant="primary" onClick={() => props.handleChangeMeme(props.meme)}>View Meme</Button>
@@ -152,23 +162,21 @@ function MemeSelectedModal(props) {
 
 function NewMemeModal(props) {
 
-  //Permette di salvare uno stato da usare quando sto copiando un meme
   const location = useLocation();
-
 
   //Contiene l'eventuale errore che non permette di effettuare il submit
   const [error, setError] = useState("");
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
+  const [visibility, setVisibility] = useState(location.state ? location.state.visibility :0);
   const handleVisibility = () => {
     setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
   }
 
 
   //Contiene il colore del meme in fase di creazione
-  const [color, setColor] = useState(location.state ? location.state.visibility : "Black");
+  const [color, setColor] = useState(location.state ? location.state.color : "Black");
   //Contiene il font del meme in fase di creazione
   const [font, setFont] = useState(location.state ? location.state.font : "font1");
 
@@ -308,7 +316,7 @@ function NewMemeModal(props) {
           currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
             <>
               <figure className="position-relative memeContainer">
-                <img className="img-fluid" src={currentMemeTemplate.img} ></img>
+                <img className="img-fluid" src={process.env.PUBLIC_URL + currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
                   return <figcaption className={s.position + " " + font + " " + color} key={index}>
                     {sentences[index]}</figcaption>
@@ -376,4 +384,209 @@ function NewMemeModal(props) {
   </Modal>
 }
 
-export default MemeList;
+function CopyMemeModal(props) {
+
+  const location = useLocation();
+
+  //Contiene l'eventuale errore che non permette di effettuare il submit
+  const [error, setError] = useState("");
+
+
+  //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
+  const [visibility, setVisibility] = useState(location.state ? location.state.visibility :0);
+  const handleVisibility = () => {
+    setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
+  }
+
+
+  //Contiene il colore del meme in fase di creazione
+  const [color, setColor] = useState(location.state ? location.state.color : "Black");
+  //Contiene il font del meme in fase di creazione
+  const [font, setFont] = useState(location.state ? location.state.font : "font1");
+
+
+  //Contiene il template del meme selezionato. Il suo aggiornamento comporta la pulizia delle frasi compilate
+  const [currentMemeTemplate, setCurrentMemeTemplate] = useState(location.state ? location.state.currentMemeTemplate : {});
+
+
+  //Titolo del meme in fase di creazione. Viene salvato sul db solo all'atto di creazione effettiva
+  const [title, setTitle] = useState(location.state ? location.state.title : "");
+
+
+  //Contiene esclusivamente i testi dell'immagine selezionata che vengono compilati
+  const [sentences, setSentences] = useState(location.state ? location.state.sentences : []);
+
+
+  //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base
+  const handleSentences = (ev, i) => {
+    console.log(ev.target.value, i, sentences[i])
+    //Se trovo gia l'elemento iesimo devo aggiornarlo -> Vedo se è diversa solo da undefined perchè potrebbe anche essere una stringa
+    //vuota nel caso in cui cancello tutto dal testo e non passerebbe un normale controllo sentences[i]?
+    sentences[i] !== undefined ? setSentences(oldSentences => {
+      //s-> singola frase, j indice della map
+      return oldSentences.map((s, j) => {
+        if (i === j) {
+          //L'indice passato dalla map nel componente è uguale a quello che sto valutando ora, posso aggiornare
+          return ev.target.value;
+        } else return s;
+      })
+    }) : setSentences(oldSentences =>
+      [
+        ...oldSentences.slice(0, i),     // first half
+        ev.target.value,                       // items to be inserted
+        ...oldSentences.slice(i)         // second half
+      ]
+    );
+    //altrimenti devo crearlo -> Per la gestione delle frasi di un templates, e quelle conservate in questo stato, è necessario che gli indici
+    //delle rispettive frasi corrispondano, per cui è necessario aggiungere l'elemento alla stessa posizione del template
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    //Variabile che mi permette di sapere se ho trovato errori
+    var err = false;
+    //VALIDAZIONE
+
+    //Almeno un testo deve essere presente(controllo sia undefined sia vettore vuoto) +
+    //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
+    if (sentences && sentences.length !== 0) {
+      sentences.map((s) => {
+        if (s.length > 100) {
+          err = true;
+          setError("You seem to have written too large text, please edit it");
+        }
+      })
+    } else {
+      //Vettore vuoto o indefinito
+      setError("Please, write at least one text");
+      err = true;
+    }
+
+    //Il titolo è obbligatorio + Titolo almeno 5 caratteri
+    if (!title || title.length < 5) {
+      err = true;
+      setError("The title is mandatory and must contain at least 5 characters")
+    } else if (title.length > 20) {
+      err = true;
+      setError("Title is too large, please edit it");
+    }
+
+    if (!err) {
+      //NESSUNA VIOLAZIONE DI VINCOLO -> Creo nuovo meme e lo aggiungo a quelli disponibili -> L'Id sarà definito dal db
+      const meme = {
+        title: title, img: currentMemeTemplate.img,
+        sentences: [currentMemeTemplate.sentences.map((s, index) => {
+          return {
+            text: sentences[index] ? sentences[index] : "",
+            postition: s.position
+          }
+        })],
+        font: font, color: color, visibility: visibility, creator: props.currentUser
+      };
+
+      //Aggiungo il nuovo meme alla lista dei tast
+      props.addMeme(meme);
+      props.onHide(false);
+    }
+
+
+  }
+
+  return <Modal
+    show={props.show}
+    backdrop="static"
+    keyboard={false}
+    aria-labelledby="contained-modal-title-vcenter"
+    size="lg"
+    centered
+  >
+    <Modal.Header closeButton onClick={() => props.onHide(false)} >
+      <Modal.Title>Copying a meme...</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form>
+        {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
+        <Form.Group as={Row} controlId="formPlaintextCreator">
+          <Form.Label column sm="2">
+            Title:
+          </Form.Label>
+          <Col sm="10">
+            <Form.Control type="text" placeholder="Insert a title" value={title}
+              onChange={(ev) => setTitle(ev.target.value)} />
+          </Col>
+        </Form.Group>
+        {
+          currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
+            <>
+              <figure className="position-relative memeContainer">
+                <img className="img-fluid" src={"/" + currentMemeTemplate.img} ></img>
+                {currentMemeTemplate.sentences.map((s, index) => {
+                  return <figcaption className={s.position + " " + font + " " + color} key={index}>
+                    {sentences[index]}</figcaption>
+                  // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
+                  //al momento della creazione di sentences
+                })}
+              </figure>
+              <Container fluid >
+                {/* Per ognuno dei testi del template selezionato visualizzo il form */}
+                {currentMemeTemplate.sentences.map((s, index) => {
+                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
+                    <Form.Label column sm="2">
+                      Text n.{index}
+                    </Form.Label>
+                    <Col sm="10">
+                      {/* Quando compilo un testo devo modificare lo stato delle sentences andando a settarlo come ciò che è stato scritto */}
+                      <Form.Control value={sentences[index] ? sentences[index] : ""}
+                        onChange={(ev) => handleSentences(ev, index)} />
+                    </Col>
+                  </Form.Group>
+                })}
+              </Container>
+            </> : null
+        }
+        <Form.Group>
+          <Form.Group controlId="exampleForm.ControlSelect1">
+            <Form.Label>Choose your favorite font?</Form.Label>
+            <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
+              <option>font1</option>
+              <option>font2</option>
+              <option>font3</option>
+              <option>font4</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Group>
+        <Form.Group>
+          <Form.Group controlId="exampleForm.ControlSelect2">
+            <Form.Label>Choose a color for the text?</Form.Label>
+            <Form.Control as="select" value={color} onChange={(ev) => setColor(ev.target.value)}>
+              <option>Black</option>
+              <option>White</option>
+              <option>Red</option>
+              <option>Blue</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Group>
+        <Form.Group>
+          <Form.Check
+
+            type="checkbox"
+            label="Click here if you want to make this meme public"
+            value={visibility}
+            checked={visibility}
+            onChange={handleVisibility}
+          />
+        </Form.Group>
+      </Form>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={() => props.onHide(false)}>
+        Close
+      </Button>
+      <Button variant="primary" onClick={handleSubmit}>Publish</Button>
+    </Modal.Footer>
+  </Modal>
+}
+
+
+export {MemeList, CopyMemeModal};
