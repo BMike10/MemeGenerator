@@ -25,7 +25,7 @@ exports.listMeme = () => {
                     //solo aggiornare il vettore delle frasi
                     meme[elementIndex] = {
                         ...meme[elementIndex],
-                        sentences: [...meme[elementIndex].sentences, { text: rows[i].text, position: rows[i].position }]  
+                        sentences: [...meme[elementIndex].sentences, { text: rows[i].text, position: rows[i].position }]
                         //Aggiungo le nuove frasi
                     };
 
@@ -33,10 +33,10 @@ exports.listMeme = () => {
                     //Nuovo elemento da aggiungere
                     meme.push({
                         id: rows[i].id,                  //Il meme è unico, anche se avro tante righe quante sono le sentences di ogni template, 
-                                                         //prendiamo sempre il primo che deve esistere sempre
+                        //prendiamo sempre il primo che deve esistere sempre
                         title: rows[i].title,            //Stesso discorso
                         img: rows[i].img,                //Stesso discorso
-                        visibility: rows[i].visibility, 
+                        visibility: rows[i].visibility,
                         color: rows[i].color,
                         font: rows[i].font,
                         templateId: rows[i].templateId,
