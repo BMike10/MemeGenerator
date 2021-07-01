@@ -84,7 +84,7 @@ function MemeCard(props) {
       <Card.Body>
         <Card.Title>{props.meme.title}</Card.Title>
         <Card.Text>
-          Created by: {props.meme.creator.name}
+          Created by: {props.meme.creator.username}
         </Card.Text>
         {/*Bottone per la copia del meme -> Se l'utente è loggato è un creator e da tale può copiare il meme*/}
         {props.loggedIn ? <Link to={{
@@ -129,7 +129,7 @@ function MemeSelectedModal(props) {
             CreatorName:
           </Form.Label>
           <Col sm="10">
-            {props.meme.creator ? <Form.Control plaintext readOnly defaultValue={props.meme.creator.name} /> : null}
+            {props.meme.creator ? <Form.Control plaintext readOnly defaultValue={props.meme.creator.username} /> : null}
           </Col>
         </Form.Group>
       </Form>
@@ -162,35 +162,33 @@ function MemeSelectedModal(props) {
 
 function NewMemeModal(props) {
 
-  const location = useLocation();
-
   //Contiene l'eventuale errore che non permette di effettuare il submit
   const [error, setError] = useState("");
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
+  const [visibility, setVisibility] = useState(0);
   const handleVisibility = () => {
     setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
   }
 
 
   //Contiene il colore del meme in fase di creazione
-  const [color, setColor] = useState(location.state ? location.state.color : "Black");
+  const [color, setColor] = useState("Black");
   //Contiene il font del meme in fase di creazione
-  const [font, setFont] = useState(location.state ? location.state.font : "font1");
+  const [font, setFont] = useState("font1");
 
 
   //Contiene il template del meme selezionato. Il suo aggiornamento comporta la pulizia delle frasi compilate
-  const [currentMemeTemplate, setCurrentMemeTemplate] = useState(location.state ? location.state.currentMemeTemplate : {});
+  const [currentMemeTemplate, setCurrentMemeTemplate] = useState({});
 
 
   //Titolo del meme in fase di creazione. Viene salvato sul db solo all'atto di creazione effettiva
-  const [title, setTitle] = useState(location.state ? location.state.title : "");
+  const [title, setTitle] = useState("");
 
 
   //Contiene esclusivamente i testi dell'immagine selezionata che vengono compilati
-  const [sentences, setSentences] = useState(location.state ? location.state.sentences : []);
+  const [sentences, setSentences] = useState([]);
 
 
   //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base

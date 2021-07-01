@@ -27,16 +27,16 @@ function App() {
     {
       id: 1, title: "Meme1", img: "drake.png",
       sentences: [{ text: "Studiare tutta la settimana per poi consegnare e non cominciare di nuovo tutto da capo", position: "top_rigth_2texts" }, { text: "Studiare tutta la settimana per poi non consegnare e perdere tutto il lavoro", position: "bottom_right_2texts" }],
-      font: "font2", color: "", visibility: 1, creator: { id: 1, name: "Michele" }, templateId: 1
+      font: "font2", color: "", visibility: 1, creator: { id: 1, username: "Michele" }, templateId: 1
     },
     {
       id: 2, title: "Meme2", img: "pacha-meme.jpg",
-      sentences: [{ text: "Vieira: L'Italia non andrà avanti", position: "center_bottom" }], font: "font1", color: "", visibility: 1, creator: { id: 2, name: "Carlo" }, templateId: 2
+      sentences: [{ text: "Vieira: L'Italia non andrà avanti", position: "center_bottom" }], font: "font1", color: "", visibility: 1, creator: { id: 2, username: "Carlo" }, templateId: 2
     },
     {
       id: 3, title: "Meme3", img: "spongebob1.jpg",
       sentences: [{ text: "Ingegneri vs Ingegneri", position: "top_rigth_3texts" }, { text: "Ingegneri vs Architetti", position: "center_rigth_3texts" }, { text: "Ingegneri vs Gestionali", position: "bottom_rigth_3texts" }], font: "font2", color: "",
-      visibility: 1, creator: { id: 2, name: "Carlo" }, templateId: 3
+      visibility: 1, creator: { id: 2, username: "Carlo" }, templateId: 3
     },
   ]);
 
