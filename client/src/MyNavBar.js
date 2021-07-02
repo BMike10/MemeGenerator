@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import { Navbar, Nav,Container } from 'react-bootstrap';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import {LoginButton,LogoutButton} from './Login';
 
 
 function MyNavBar(props) {
@@ -17,9 +18,8 @@ function MyNavBar(props) {
                         <img src="https://img.icons8.com/small/32/ffffff/user-male-circle.png" alt="" />
                     </Nav.Item>
                     <Nav.Item>
-                        {/* {props.loggedIn ? <Link to="/login" ><LogoutButton logout={props.logout}> </LogoutButton></Link> : <Link to="/login" />}
-                        {!props.loggedIn ? <Link to="/login" ><LoginButton logout={props.logout}> </LoginButton></Link> : null} */}
-
+                        {props.loggedIn ? <Link to="/" ><LogoutButton logout={props.logout}> </LogoutButton></Link> :  
+                        <Link to="/login" ><LoginButton logout={props.logout}> </LoginButton></Link>}
                     </Nav.Item>
                 </Container>
             </Nav>

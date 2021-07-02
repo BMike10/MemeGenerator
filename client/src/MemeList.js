@@ -29,11 +29,11 @@ function MemeList(props) {
     setModalShowNewMeme(show);
   }
 
-  //Visualizzazione del modale per la copia di un meme
-  const [modalShowCopyMeme, setModalShowCopyMeme] = useState(location.state ? location.state.modalShowNewMeme : false);
-  const handleModalCopyMeme = (show) => {
-    setModalShowCopyMeme(show);
-  }
+  //Visualizzazione del modale per la copia di un meme -> Non usato
+  //const [modalShowCopyMeme, setModalShowCopyMeme] = useState(location.state ? location.state.modalShowNewMeme : false);
+  //const handleModalCopyMeme = (show) => {
+  //  setModalShowCopyMeme(show);
+  //}
 
 
   return (
@@ -43,6 +43,7 @@ function MemeList(props) {
         show={modalShowSelectedMeme}
         onHide={handleModalSelectedMeme}
         meme={currentMeme}
+        memeTemplate={props.memeTemplates ? props.memeTemplates.filter((mt) => mt.id === currentMeme.templateId)[0] : undefined}
       />
       {/* Il modale sarà visualizzato solo alla pressione del pulsante per la creazione di un nuovo meme*/}
       <NewMemeModal
@@ -78,9 +79,25 @@ function MemeList(props) {
 
 
 function MemeCard(props) {
+
+  //Logica per la visione della card a seconda del proprio status. Ci deve essere anche un caso di default
+  //perchè non sempre la proprietà è presente
+  let statusClass = null
+  switch (props.meme.status) {
+    case 'added':
+      statusClass = 'success';
+      break;
+    case 'deleted':
+      statusClass = 'danger';
+      break;
+    default:
+      statusClass = "primary"
+      break;
+  }
+
   return <>
-    <Card style={{ width: '26rem' }}>
-      <Card.Img variant="top" src={props.meme.img} width={414} height={414} />
+    <Card style={{ width: '26rem' }} bg={statusClass}>
+      <Card.Img variant="top" src={props.meme.id? props.memeTemplate.img : props.meme.img} width={414} height={414} />
       <Card.Body>
         <Card.Title>{props.meme.title}</Card.Title>
         <Card.Text>
@@ -95,11 +112,11 @@ function MemeCard(props) {
               return s.text;
             }), currentMemeTemplate: props.memeTemplate
           }
-        }}><Button variant="primary">Copy the meme</Button>
+        }}><Button variant="light">Copy the meme</Button>
         </Link> : null}
         {/*Bottone per la visualizzazione del modale con il meme -> Se l'id è undefined si tratta della card per la creazione di un nuovo meme*/}
-        {props.meme.id ? <Button variant="primary" onClick={() => props.handleChangeMeme(props.meme)}>View Meme</Button>
-          : <Button variant="primary" onClick={() => props.handleModalNewMeme(true)}>Create new Meme</Button>}
+        {props.meme.id ? <Button variant="light" onClick={() => props.handleChangeMeme(props.meme)}>View Meme</Button>
+          : <Button variant="light" onClick={() => props.handleModalNewMeme(true)}>Create new Meme</Button>}
         {/* Se mi è stata inviata anche la props delete vuol dire che sono nel caso del creator e che voglio un ulteriore
         pulsante per l'eliminazione dei meme da me creati. Questo pulsante non deve comparire nel caso della carta di creazione 
         oovero quando l'id è undefined */}
@@ -134,16 +151,16 @@ function MemeSelectedModal(props) {
         </Form.Group>
       </Form>
       <Container>
-        {props.meme.img && props.meme.sentences ?
+        {props.meme && props.meme.sentences && props.memeTemplate ?
           <>
             <figure className="position-relative memeContainer"
             >
-              <img src={process.env.PUBLIC_URL + props.meme.img} alt={props.meme && props.meme.img.split(".").push()}
+              <img src={process.env.PUBLIC_URL + props.memeTemplate.img} alt={props.meme && props.memeTemplate.img.split(".").push()}
                 className="img-fluid" >
               </img>
-              {props.meme.sentences.map((s, index) => {
+              {props.memeTemplate.sentences.map((s, index) => {
                 return <figcaption className={s.position + " " + props.meme.font} key={index}>
-                  {s.text}</figcaption>
+                  {props.meme.sentences[index].text}</figcaption>
               })}
             </figure>
           </>
@@ -265,7 +282,11 @@ function NewMemeModal(props) {
             postition: s.position
           }
         })],
-        font: font, color: color, visibility: visibility, creator: props.currentUser//Viene passato lo user corrente per cui cambia il proprietario
+        font: font, color: color, visibility: visibility, 
+        creator: {id : props.currentUser.id, username: props.currentUser.username},
+       //Viene passato lo user corrente per cui cambia il proprietario
+        templateId: currentMemeTemplate.id,
+
       };
 
       //Aggiungo il nuovo meme alla lista dei tast
@@ -493,7 +514,9 @@ function CopyMemeModal(props) {
             postition: s.position
           }
         })],
-        font: font, color: color, visibility: visibility, creator: props.currentUser
+        font: font, color: color, visibility: visibility, 
+        creator: {id : props.currentUser.id, username: props.currentUser.username},
+        templateId: currentMemeTemplate.id
       };
 
       //Aggiungo il nuovo meme alla lista dei tast

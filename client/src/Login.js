@@ -1,6 +1,5 @@
 import { Form, Button, Col, Container, Alert, Row } from 'react-bootstrap';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 
 //import { Redirect } from 'react-router';
 
@@ -35,10 +34,10 @@ function LoginForm(props) {
                 <Form>
                     {errorMessage ? <Alert variant='danger'>{errorMessage}</Alert> : ''}
                     <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Email address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" value={username} onChange={ev => setUsername(ev.target.value)} />
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control type="username" placeholder="Enter username" value={username} onChange={ev => setUsername(ev.target.value)} />
                         <Form.Text className="text-muted">
-                            We'll never share your email with anyone else.
+                            We'll never share your username with anyone else.
                         </Form.Text>
                     </Form.Group>
 
@@ -49,12 +48,6 @@ function LoginForm(props) {
                     <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
                     </Button>
-                    {/* <Link to="/surveys">
-                    <Button variant="primary" >
-                        Entra come visualizzatore
-                    </Button>
-                </Link> */}
-
                 </Form>
             </Row>
         </Container>
@@ -73,7 +66,7 @@ function LogoutButton(props) {
 function LoginButton(props) {
     return (
         <Col>
-            <Link to="/login"><Button variant="outline-light" className="mt-1" >Login</Button></Link>
+            <Button variant="outline-light" className="mt-1" >Login</Button>
         </Col>
     )
 }
