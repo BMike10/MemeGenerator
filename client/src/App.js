@@ -46,7 +46,7 @@ function App() {
   const [memeTemplates, setMemeTemplates] = useState([]);
 
   //Mantiene l'utente corrente (Per mostrare i meme personali, cancellarli e crearli)
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(null);
 
 
   //Use Effect:
@@ -92,6 +92,7 @@ function App() {
         // here you have the user info, if already logged in
         // TODO: store them somewhere and use them, if needed
         const user = await API.getUserInfo();
+        console.log(user)
         setCurrentUser(user);
         setLoggedIn(true);
       } catch (err) {
@@ -188,7 +189,8 @@ function App() {
   //Funzioni per il login e logout dell'utente
   const doLogIn = async (credentials) => {
     try {
-      /* const user = */  await API.logIn(credentials);
+      const user =  await API.logIn(credentials);
+      setCurrentUser(user);
       setLoggedIn(true);
       //setMessage({msg: `Welcome, ${user}!`, type: 'success'});
     } catch (err) {
@@ -199,6 +201,7 @@ function App() {
   const doLogOut = async () => {
     await API.logOut();
     setLoggedIn(false);
+    setCurrentUser(null);
     // Non è necessario pulire perchè i meme li posso vedere anche se non sono loggato
 
   }
