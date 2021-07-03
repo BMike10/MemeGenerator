@@ -52,7 +52,9 @@ function addMeme(meme) {
             body: JSON.stringify(meme),
         }).then((response) => {
             if (response.ok) {
-                resolve(null);
+                console.log(response.clone().json());
+                //Devo clonarla per non consumarla
+                resolve(response.clone().json());
             } else {
                 // analyze the cause of error
                 response.json()

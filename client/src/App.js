@@ -103,12 +103,12 @@ function App() {
 
   //Logica applicativa
   //Aggiunta di un nuovo meme
-  const addMeme = (meme) => {
+  const addMeme = (m) => {
     //Quando viene creato un meme, gli aggiungo una proprietà status che mi permetterà di tenerlo
     //sotto controllo sino a che non viene aggiutno al db. Potrei anche non aggiornare lo stato se non fosse per tenere conto
     //della nuova proprietà che ho aggiunto
-    meme.status = 'added';
-    setMeme(oldMeme => [...oldMeme, meme]);
+    m.status = 'added';
+    setMeme(oldMeme => [...oldMeme, m]);
 
     //Un meme è stato aggiunto, devo andare ad aggiornare il db.  Sfrutto tale
     //inserimento per ricaricare i meme disponibili settando dirty a true, in questo modo nella nuova ricarica avrò anche il meme che 
@@ -117,16 +117,22 @@ function App() {
     //O si crea una post in grado di gestire l'aggiunta in due tabelle oppure si chiama sia la addMeme sia la
     //addSentence, come facciamo qui. Questo però comporta lo spacchettamento dell'oggetto(non posso farmelo dare
     //gia solo con i pezzi che mi servono perchè comunque vado a risettare lo stato in cui voglio il meme intero)
+    const sentences = m.sentences.map(s => {
+      return {text: s.text, sentencesTemplateId: s.sentencesTemplateId};
+    });
     API.addMeme({
-      title: meme.title, img: meme.img,
-      font: meme.font, color: meme.color, visibility: meme.visibility,
-      creatorId: meme.creator.id,
-      templateId: meme.templateId
-    })//NON FUNZIONA -> TUTTO SI PUE EVITARE SE OGNI SENTENCE HA ANCHE GLI IDENTIFICATIVI
-      .then(() => addSentences(meme.sentences.map(({position, ...tableSentence}, index) => {
-        return {...tableSentence, memeId: meme.id, 
-          sentencesTemplateId : memeTemplates.find((m) => m.id === meme.templateId).sentences[index].id }
-      })))
+      title: m.title, img: m.img,
+      font: m.font, color: m.color, visibility: m.visibility,
+      creatorId: m.creator.id,
+      templateId: m.templateId
+    })
+      .then((memeId) => {
+        addSentences(sentences.map((s)=>{
+          return {
+            ...s,
+            memeId : memeId
+          }
+        }))} )
       .then(() => setDirtyMeme(true))
       .catch(err => {
         //setErrorMsg("Impossible to upload sentences! Please, try again later...");
@@ -138,7 +144,7 @@ function App() {
   const addSentences = (sentences) => {
     console.log(sentences.length)
     let promises = []
-    for(let i=0;i<sentences.length;i++){
+    for (let i = 0; i < sentences.length; i++) {
       const promise = API.addSentence(sentences[i]);
       promises.push(promise);
     }

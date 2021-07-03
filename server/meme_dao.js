@@ -57,7 +57,7 @@ const db = require('./db');
 // Get all memeTemplate
 exports.listMemeTemplate = () => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT mt.id, mt.nome, mt.img, st.position
+        const sql = `SELECT mt.id, mt.nome, mt.img, st.position, st.id as sentencesTemplateId
          FROM MemeTemplate mt, SentencesTemplate st
          WHERE mt.id = st.templateId`;
         db.all(sql, (err, rows) => {
@@ -80,7 +80,7 @@ exports.listMemeTemplate = () => {
                     //solo aggiornare il vettore delle frasi
                     memeTemplate[elementIndex] = {
                         ...memeTemplate[elementIndex],
-                        sentences: [...memeTemplate[elementIndex].sentences, { text: "", position: rows[i].position }]
+                        sentences: [...memeTemplate[elementIndex].sentences, { id: rows[i].sentencesTemplateId, text: "", position: rows[i].position }]
                         //Aggiungo le nuove frasi
                     };
                 } else {
@@ -90,7 +90,7 @@ exports.listMemeTemplate = () => {
                         //prendiamo sempre il primo che deve esistere sempre
                         nome: rows[i].nome,
                         img: rows[i].img,
-                        sentences: [{ text: "", position: rows[i].position }]             //Aggiungo la prima frase che ho trovato
+                        sentences: [{ id: rows[i].sentencesTemplateId, text: "", position: rows[i].position }]             //Aggiungo la prima frase che ho trovato
                     })
                 }
             }
@@ -102,7 +102,7 @@ exports.listMemeTemplate = () => {
 exports.listMeme = () => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
-        m.creatorId, c.username as creatorUsername, s.text 
+        m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId
         FROM Meme m, Creators c, SentencesMeme s
         WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId`;
         db.all(sql, (err, rows) => {
@@ -149,7 +149,7 @@ exports.listMeme = () => {
 exports.getMemeByCreator = (userId) => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
-        m.creatorId, c.username as creatorUsername, s.text 
+        m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId
         FROM Meme m, Creators c, SentencesMeme s
         WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId AND c.id = ?`;
         db.all(sql, [userId] , (err, rows) => {

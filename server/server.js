@@ -168,9 +168,10 @@ app.post('/api/meme', isLoggedIn, [
     try {
       //req.body.creatorId dovrebbe già contenere l'utente che sta creando il meme, ma per evitare problematiche sfruttiamo
       //req.user.id che è invece 'utente corrente che gestiamo con passport
-      await meme_dao.createMeme(meme, req.user.id);
+      const result = await meme_dao.createMeme(meme, req.user.id);
       //TimeOut per visualizzare i momenti di attesta attraverso uno stato 
-      setTimeout(() => res.status(201).end(), 2000);
+      //setTimeout(() => res.status(201).end(), 2000);
+      res.json(result);
 
     } catch (err) {
       res.status(503).json({ error: `Database error during creation of a meme.` });

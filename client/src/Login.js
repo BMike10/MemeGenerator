@@ -4,7 +4,7 @@ import { useState } from 'react';
 //import { Redirect } from 'react-router';
 
 function LoginForm(props) {
-    const [username, setUsername] = useState('student@studenti.polito.it');
+    const [username, setUsername] = useState('Michele');
     const [password, setPassword] = useState('student');
     const [errorMessage, setErrorMessage] = useState('');
 

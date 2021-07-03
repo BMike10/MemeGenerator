@@ -276,12 +276,13 @@ function NewMemeModal(props) {
       //NESSUNA VIOLAZIONE DI VINCOLO -> Creo nuovo meme e lo aggiungo a quelli disponibili -> L'Id sarà definito dal db
       const meme = {
         title: title, img: currentMemeTemplate.img,
-        sentences: [currentMemeTemplate.sentences.map((s, index) => {
+        sentences: currentMemeTemplate.sentences.map((s, index) => {
           return {
+            sentencesTemplateId: s.id,
             text: sentences[index] ? sentences[index] : "",
-            postition: s.position
+            position: s.position
           }
-        })],
+        }),
         font: font, color: color, visibility: visibility, 
         creator: {id : props.currentUser.id, username: props.currentUser.username},
        //Viene passato lo user corrente per cui cambia il proprietario
@@ -290,6 +291,7 @@ function NewMemeModal(props) {
       };
 
       //Aggiungo il nuovo meme alla lista dei tast
+      console.log(meme);
       props.addMeme(meme);
       props.onHide(false);
     }
