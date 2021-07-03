@@ -277,6 +277,7 @@ function NewMemeModal(props) {
       const meme = {
         title: title, img: currentMemeTemplate.img,
         sentences: currentMemeTemplate.sentences.map((s, index) => {
+          console.log("hey: " + index);
           return {
             sentencesTemplateId: s.id,
             text: sentences[index] ? sentences[index] : "",

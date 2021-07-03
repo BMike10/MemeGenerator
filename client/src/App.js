@@ -71,8 +71,9 @@ function App() {
     const getMeme = async () => {
       const meme = await API.getAllMeme();
       setMeme(meme);
+      setDirtyMeme(false);
     };
-    if (dirtyMeme || loggedIn) {
+    if (dirtyMeme && loggedIn) {
       getMeme().catch(err => {
         //setMessage({ msg: 'Impossible to load your exams! Please, try again later...', type: 'danger' });
         console.error(err);

@@ -183,9 +183,10 @@ app.post('/api/meme', isLoggedIn, [
 app.post('/api/sentences', isLoggedIn, [
   check('memeId').isInt({ min: 0 }),
   check('sentencesTemplateId').isInt({ min: 0 }),
-  check('text').isLength({ min: 1, max: 50 }),
+  check('text').isLength({ min: 0, max: 100 }),
 ], async (req, res) => {
-
+    //da controllare anche che almeno uno dei tesi abbia almeno un testo
+    
     //Se qualche check non è andato a buon fine
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
