@@ -18,6 +18,7 @@ const PORT = 3001;
 // set-up the middlewares
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.static('public'));
 
 
 /*** Set up Passport ***/

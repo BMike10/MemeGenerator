@@ -283,7 +283,7 @@ function App() {
           stato per lo show per entrambe le funzionalità
           */}
 
-        <Route path='/home/copyMeme' render={() => {
+        <Route exact path='/home/copyMeme' render={() => <> {
           loggedIn ?
             <>
               <Container fluid className="vh-100">
@@ -291,7 +291,7 @@ function App() {
                   <Container fluid className="p-4">
                     <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
                     <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates}
-
+                              path={"/"}
                     />
                     <h2 className="fs-1">My funny meme!</h2>
                     <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
@@ -305,6 +305,7 @@ function App() {
                       deleteMeme={deleteMeme}    //Delete meme è passato solo da questa pagina e con questo componente,
                       // Tutti gli altri non avranno questa props(sarà undefined)
                       currentUser={currentUser}
+                      path={"/"}
                     />
                   </Container>
                 </Row>
@@ -312,6 +313,7 @@ function App() {
               <CopyMemeModal show={true} addMeme={addMeme} currentUser={currentUser}></CopyMemeModal>
             </> : <Redirect to="/login" />
         }
+        </>
         }>
         </Route>
       </Switch>

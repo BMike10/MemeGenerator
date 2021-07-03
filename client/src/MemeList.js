@@ -60,6 +60,7 @@ function MemeList(props) {
           props.meme.map((m, index) => {
             return <ListGroup.Item key={index} className=" m-3">
               <MemeCard
+                path={props.path}
                 meme={props.meme[index]}
                 memeTemplate={props.memeTemplates ? props.memeTemplates.filter((mt) => mt.id === m.templateId)[0] : undefined}
                 handleChangeMeme={handleChangeMeme}
@@ -96,8 +97,11 @@ function MemeCard(props) {
   }
 
   return <>
-    <Card style={{ width: '26rem' }} bg={statusClass}>
-      <Card.Img variant="top" src={props.meme.id ? props.memeTemplate.img : props.meme.img} width={414} height={414} />
+    <Card style={{ width: '26rem' }} bg={statusClass}>  
+      <Card.Img variant="top" 
+      src={ props.path? (props.meme.id? "/" + props.memeTemplate.img : "/" + props.meme.img) :
+       (props.meme.id? props.memeTemplate.img : props.meme.img)} 
+       width={414} height={414} />
       <Card.Body>
         <Card.Title>{props.meme.title}</Card.Title>
         <Card.Text>
@@ -158,7 +162,7 @@ function MemeSelectedModal(props) {
           <>
             <figure className="position-relative memeContainer"
             >
-              <img src={process.env.PUBLIC_URL + props.memeTemplate.img} alt={props.meme && props.memeTemplate.img.split(".").push()}
+              <img src={props.memeTemplate.img} alt={props.meme && props.memeTemplate.img.split(".").push()}
                 className="img-fluid" >
               </img>
               {props.memeTemplate.sentences.map((s, index) => {
@@ -331,7 +335,7 @@ function NewMemeModal(props) {
           <Container>
             {props.memeTemplates && props.memeTemplates.map((mT, index) => {
               return <img width={50} height={50} key={index}
-                src={process.env.PUBLIC_URL + mT.img} onClick={() => { handleChangeTemplate(mT) }}></img>
+                src={mT.img} onClick={() => { handleChangeTemplate(mT) }}></img>
             })}
           </Container>
 
@@ -341,7 +345,7 @@ function NewMemeModal(props) {
           currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
             <>
               <figure className="position-relative memeContainer">
-                <img className="img-fluid" src={process.env.PUBLIC_URL + currentMemeTemplate.img} ></img>
+                <img className="img-fluid" src={currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
                   return <figcaption className={s.position + " " + font + " " + color} key={index}>
                     {sentences[index]}</figcaption>
@@ -427,7 +431,7 @@ function CopyMemeModal(props) {
 
 
   //Contiene il meme copiato, mi serve sopratutto per l'informazione sul suo creatore
-  const [currentMeme, setCurrentMeme] = useState(location.state ? location.state.currentMeme : {});
+  const [currentMeme] = useState(location.state ? location.state.currentMeme : {});
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
@@ -444,7 +448,7 @@ function CopyMemeModal(props) {
 
 
   //Contiene il template del meme selezionato. Il suo aggiornamento comporta la pulizia delle frasi compilate
-  const [currentMemeTemplate, setCurrentMemeTemplate] = useState(location.state ? location.state.currentMemeTemplate : {});
+  const [currentMemeTemplate] = useState(location.state ? location.state.currentMemeTemplate : {});
 
 
   //Titolo del meme in fase di creazione. Viene salvato sul db solo all'atto di creazione effettiva
@@ -516,8 +520,9 @@ function CopyMemeModal(props) {
         title: title, img: currentMemeTemplate.img,
         sentences: [currentMemeTemplate.sentences.map((s, index) => {
           return {
+            sentencesTemplateId: s.id,
             text: sentences[index] ? sentences[index] : "",
-            postition: s.position
+            position: s.position
           }
         })],
         font: font, color: color, visibility: visibility,
