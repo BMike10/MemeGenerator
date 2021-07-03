@@ -224,6 +224,7 @@ app.delete('/api/meme/:id',isLoggedIn ,param('id').isInt({ min: 1}), async funct
       res.status(204).end();
 
   } catch (err) {
+    console.log(err);
       res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
   }
 });

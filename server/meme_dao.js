@@ -224,7 +224,7 @@ exports.createSentence = (sentence) => {
 // delete an existing exam
 exports.deleteMeme = (memeId,userId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'DELETE FROM Meme WHERE id = ? AND creator = ?';
+        const sql = 'DELETE FROM Meme WHERE id = ? AND creatorId = ?';
         db.run(sql, [memeId,userId], function (err) {
             if (err || this.changes===0) {
                 reject(err);

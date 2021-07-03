@@ -7,7 +7,6 @@ import { MemeList, CopyMemeModal } from './MemeList';
 import React, { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import { deleteSentence } from '../../server/meme_dao';
 
 //PROBLEMA1 : Perchè ogni volta non riesce una map o una filter di uno stato nonostante fossero questi sempre inizializzati?
 //SOLUZIONE1 : Il problema nasce dal fatto che le proprietà passate agli stessi componenti sono differenti in molti casi, per cui 
@@ -188,7 +187,7 @@ function App() {
   //Rimozione di frasi relative ad un meme eliminato (Viene chiamata in conseguenza alla rimozione di un meme)
   const deleteSentences = (sentencesId) => {
     let promises = []
-    for (let i = 0; i < sentences.length; i++) {
+    for (let i = 0; i < sentencesId.length; i++) {
       const promise = API.deleteSentence(sentencesId[i]);
       promises.push(promise);
     }
