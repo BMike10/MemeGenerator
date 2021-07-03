@@ -97,14 +97,14 @@ function MemeCard(props) {
 
   return <>
     <Card style={{ width: '26rem' }} bg={statusClass}>
-      <Card.Img variant="top" src={props.meme.id? props.memeTemplate.img : props.meme.img} width={414} height={414} />
+      <Card.Img variant="top" src={props.meme.id ? props.memeTemplate.img : props.meme.img} width={414} height={414} />
       <Card.Body>
         <Card.Title>{props.meme.title}</Card.Title>
         <Card.Text>
           Created by: {props.meme.creator.username}
         </Card.Text>
         {/*Bottone per la copia del meme -> Se l'utente è loggato è un creator e da tale può copiare il meme*/}
-        {props.loggedIn ? <Link to={{
+        {props.loggedIn && props.meme.id ? <Link to={{
           pathname: "/home/copyMeme",
           state: {
             currentMeme: props.meme, modalShowCopyMeme: true, id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, visibility: props.meme.visibility,
@@ -120,7 +120,10 @@ function MemeCard(props) {
         {/* Se mi è stata inviata anche la props delete vuol dire che sono nel caso del creator e che voglio un ulteriore
         pulsante per l'eliminazione dei meme da me creati. Questo pulsante non deve comparire nel caso della carta di creazione 
         oovero quando l'id è undefined */}
-        {props.deleteMeme && props.meme.id ? <Button variant="danger" onClick={() => props.deleteMeme(props.meme.id)}>Delete Meme</Button> : null}
+        {props.deleteMeme && props.meme.id ? <Button variant="danger"
+          onClick={() => props.deleteMeme(props.meme.id, props.meme.sentences.map((s) => {
+            return s.id
+          }))}>Delete Meme</Button> : null}
       </Card.Body>
     </Card>
   </>
@@ -284,9 +287,9 @@ function NewMemeModal(props) {
             position: s.position
           }
         }),
-        font: font, color: color, visibility: visibility, 
-        creator: {id : props.currentUser.id, username: props.currentUser.username},
-       //Viene passato lo user corrente per cui cambia il proprietario
+        font: font, color: color, visibility: visibility,
+        creator: { id: props.currentUser.id, username: props.currentUser.username },
+        //Viene passato lo user corrente per cui cambia il proprietario
         templateId: currentMemeTemplate.id,
 
       };
@@ -517,8 +520,8 @@ function CopyMemeModal(props) {
             postition: s.position
           }
         })],
-        font: font, color: color, visibility: visibility, 
-        creator: {id : props.currentUser.id, username: props.currentUser.username},
+        font: font, color: color, visibility: visibility,
+        creator: { id: props.currentUser.id, username: props.currentUser.username },
         templateId: currentMemeTemplate.id
       };
 

@@ -102,7 +102,7 @@ exports.listMemeTemplate = () => {
 exports.listMeme = () => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
-        m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId
+        m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId, s.id as sentenceId
         FROM Meme m, Creators c, SentencesMeme s
         WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId`;
         db.all(sql, (err, rows) => {
@@ -122,7 +122,7 @@ exports.listMeme = () => {
                     //solo aggiornare il vettore delle frasi
                     meme[elementIndex] = {
                         ...meme[elementIndex],
-                        sentences: [...meme[elementIndex].sentences, { text: rows[i].text, position: "" }]
+                        sentences: [...meme[elementIndex].sentences, { id: rows[i].sentenceId, text: rows[i].text, position: "" }]
                         //Aggiungo le nuove frasi
                     };
                 } else {
@@ -136,7 +136,7 @@ exports.listMeme = () => {
                         font: rows[i].font,
                         templateId: rows[i].templateId,
                         creator: { id: rows[i].creatorId, username: rows[i].creatorUsername },
-                        sentences: [{ text: rows[i].text, position: "" }]             //Aggiungo la prima frase che ho trovato
+                        sentences: [{ id: rows[i].sentenceId, text: rows[i].text, position: "" }]             //Aggiungo la prima frase che ho trovato
                     })
                 }
             }

@@ -7,6 +7,7 @@ import { MemeList, CopyMemeModal } from './MemeList';
 import React, { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { deleteSentence } from '../../server/meme_dao';
 
 //PROBLEMA1 : Perchè ogni volta non riesce una map o una filter di uno stato nonostante fossero questi sempre inizializzati?
 //SOLUZIONE1 : Il problema nasce dal fatto che le proprietà passate agli stessi componenti sono differenti in molti casi, per cui 
@@ -120,7 +121,7 @@ function App() {
     //addSentence, come facciamo qui. Questo però comporta lo spacchettamento dell'oggetto(non posso farmelo dare
     //gia solo con i pezzi che mi servono perchè comunque vado a risettare lo stato in cui voglio il meme intero)
     const sentences = m.sentences.map(s => {
-      return {text: s.text, sentencesTemplateId: s.sentencesTemplateId};
+      return { text: s.text, sentencesTemplateId: s.sentencesTemplateId };
     });
     API.addMeme({
       title: m.title, img: m.img,
@@ -129,12 +130,13 @@ function App() {
       templateId: m.templateId
     })
       .then((memeId) => {
-        addSentences(sentences.map((s)=>{
+        addSentences(sentences.map((s) => {
           return {
             ...s,
-            memeId : memeId
+            memeId: memeId
           }
-        }))} )
+        }))
+      })
       .then(() => setDirtyMeme(true))
       .catch(err => {
         //setErrorMsg("Impossible to upload sentences! Please, try again later...");
@@ -144,15 +146,11 @@ function App() {
 
   //Aggiunta di frasi relativi ad un meme aggiunto (Viene chiamata in conseguenza alla aggiunta di un meme)
   const addSentences = (sentences) => {
-    console.log(sentences.length)
     let promises = []
     for (let i = 0; i < sentences.length; i++) {
       const promise = API.addSentence(sentences[i]);
       promises.push(promise);
     }
-
-    console.log(promises);
-
     Promise.all(promises).then(
       () => {
         console.log("OK");
@@ -161,11 +159,10 @@ function App() {
       //setErrorMsg("Impossible to upload sentences! Please, try again later...");
       console.error(err);
     });
-
   };
 
   //Eliminazione di un meme
-  const deleteMeme = (id) => {
+  const deleteMeme = (id, sentencesId) => {
     //Questo mi permetterà di vederlo ad esempio in rosso, non lo sto eliminando in realtà.Lo eliminerò direttamente dal db
     //e farò in modo che la useEffect ricarichi i meme, in questo modo il meme eliminato non ci sarà più
     //Se lo eliminassi non potrei più vedere lo status
@@ -180,6 +177,7 @@ function App() {
     });
     //A questo punto avviene l'effettiva eliminazione dal db. Cambio il valore del dirty cosi da ricaricare
     API.deleteMeme(id)
+      .then(() => deleteSentences(sentencesId))
       .then(() => setDirtyMeme(true))
       .catch(err => {
         //setErrorMsg("Impossible to upload sentences! Please, try again later...");
@@ -187,10 +185,27 @@ function App() {
       });
   };
 
+  //Rimozione di frasi relative ad un meme eliminato (Viene chiamata in conseguenza alla rimozione di un meme)
+  const deleteSentences = (sentencesId) => {
+    let promises = []
+    for (let i = 0; i < sentences.length; i++) {
+      const promise = API.deleteSentence(sentencesId[i]);
+      promises.push(promise);
+    }
+    Promise.all(promises).then(
+      () => {
+        console.log("OK");
+      }
+    ).catch(err => {
+      //setErrorMsg("Impossible to upload sentences! Please, try again later...");
+      console.error(err);
+    });
+  };
+
   //Funzioni per il login e logout dell'utente
   const doLogIn = async (credentials) => {
     try {
-      const user =  await API.logIn(credentials);
+      const user = await API.logIn(credentials);
       setCurrentUser(user);
       setLoggedIn(true);
       //setMessage({msg: `Welcome, ${user}!`, type: 'success'});
