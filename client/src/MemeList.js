@@ -179,7 +179,6 @@ function MemeSelectedModal(props) {
       <Button variant="secondary" onClick={() => props.onHide(false)}>
         Close
       </Button>
-      <Button variant="primary">Save</Button>
     </Modal.Footer>
   </Modal>
 }
@@ -331,6 +330,13 @@ function NewMemeModal(props) {
       console.log(meme);
       props.addMeme(meme);
       props.onHide(false);
+      //Clean state
+      setColor("");
+      setTitle("");
+      setVisibility(0);
+      setCurrentMemeTemplate({});
+      setFont("");
+      setSentences([]);
     }
 
 

@@ -226,25 +226,25 @@ function App() {
     <Router>
       <MyNavBar loggedIn={loggedIn} logout={doLogOut} />
       <Switch>
-        {/*Route login. Non è la schemata di ingresso, ma viene visualizzata solo alla pressione del tasto login*/}
-        <Route path="/login" render={() =>
-          <>{loggedIn ? <Redirect to="/home" /> : <LoginForm login={doLogIn} />}</>
-        } >
-        </Route>
         {/*Route home visualizzatore -> Vengono visualizzate i meme già creati pubblici*/}
         <Route exact path='/' render={() =>
           <>{loggedIn ? <Redirect to="/home" /> :
-          <Container fluid className="vh-100">
-            <Row className="h-100">
-              <Container fluid className="p-4">
-                <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                <MemeList meme={meme.filter((m) => m.visibility === 1)} memeTemplates={memeTemplates}
-                />
-              </Container>
-            </Row>
-          </Container>
+            <Container fluid className="vh-100">
+              <Row className="h-100">
+                <Container fluid className="p-4">
+                  <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
+                  <MemeList meme={meme.filter((m) => m.visibility === 1)} memeTemplates={memeTemplates}
+                  />
+                </Container>
+              </Row>
+            </Container>
           }</>
         }>
+        </Route>
+        {/*Route login. Non è la schemata di ingresso, ma viene visualizzata solo alla pressione del tasto login*/}
+        <Route exact path="/login" render={() =>
+          <>{loggedIn ? <Redirect to="/home" /> : <LoginForm login={doLogIn} />}</>
+        } >
         </Route>
         {/*Route home admin -> Vengono visualizzate i meme già creati(tutti) + i meme personali + possibilità di creazione/copia/eliminazione*/}
         <Route exact path='/home' render={() => <>
@@ -272,7 +272,7 @@ function App() {
                     />
                   </Container>
                 </Row>
-              </Container> : <Redirect to="/login" />
+              </Container> : <Redirect to="/" />
           }
         </>
         }>
@@ -293,7 +293,7 @@ function App() {
                   <Container fluid className="p-4">
                     <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
                     <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates}
-                              path={"/"}
+                      path={"/"}
                     />
                     <h2 className="fs-1">My funny meme!</h2>
                     <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
@@ -313,7 +313,7 @@ function App() {
                 </Row>
               </Container>
               <CopyMemeModal show={true} addMeme={addMeme} currentUser={currentUser}></CopyMemeModal>
-            </> : <Redirect to="/login" />
+            </> : <Redirect to="/" />
         }
         </>
         }>
