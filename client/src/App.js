@@ -233,6 +233,7 @@ function App() {
         </Route>
         {/*Route home visualizzatore -> Vengono visualizzate i meme già creati pubblici*/}
         <Route exact path='/' render={() =>
+          <>{loggedIn ? <Redirect to="/home" /> :
           <Container fluid className="vh-100">
             <Row className="h-100">
               <Container fluid className="p-4">
@@ -242,6 +243,7 @@ function App() {
               </Container>
             </Row>
           </Container>
+          }</>
         }>
         </Route>
         {/*Route home admin -> Vengono visualizzate i meme già creati(tutti) + i meme personali + possibilità di creazione/copia/eliminazione*/}

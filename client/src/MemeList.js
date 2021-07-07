@@ -166,7 +166,7 @@ function MemeSelectedModal(props) {
                 className="img-fluid" >
               </img>
               {props.memeTemplate.sentences.map((s, index) => {
-                return <figcaption className={s.position + " " + props.meme.font} key={index}>
+                return <figcaption className={s.position + " " + props.meme.font + " text-" +props.meme.color} key={index}>
                   {props.meme.sentences[index].text}</figcaption>
               })}
             </figure>
@@ -320,7 +320,7 @@ function NewMemeModal(props) {
             position: s.position
           }
         }),
-        font: font, color: color, visibility: visibility,
+        font: font, color: color.split("-")[0], visibility: visibility,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         //Viene passato lo user corrente per cui cambia il proprietario
         templateId: currentMemeTemplate.id,
@@ -586,7 +586,7 @@ function CopyMemeModal(props) {
             position: s.position
           }
         })],
-        font: font, color: color, visibility: visibility,
+        font: font, color:  color.split("-")[0], visibility: visibility,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         templateId: currentMemeTemplate.id
       };
