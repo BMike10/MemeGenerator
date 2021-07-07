@@ -199,6 +199,35 @@ function NewMemeModal(props) {
 
   //Contiene il colore del meme in fase di creazione
   const [color, setColor] = useState("Black");
+  const handleColor = (value) => {
+    const newValue = value.split("-")[1];
+    switch(value){
+      case "Yellow":
+        setColor("warning-Yellow");
+        break;
+      case "Red":
+        setColor("danger-Red");
+        break;
+      case "White":
+        setColor("light-White");
+        break;
+      case "Blue":
+        setColor("primary-Blue");
+        break;
+      case "Light Blue":
+        setColor("info-Light Blue");
+        break;
+      case "Green":
+        setColor("success-Green");
+        break;
+      case "Violet":
+        setColor("secondary-Violet");
+        break;
+      default:
+        setColor("dark");
+        break;
+    }
+  }
   //Contiene il font del meme in fase di creazione
   const [font, setFont] = useState("font1");
 
@@ -347,7 +376,7 @@ function NewMemeModal(props) {
               <figure className="position-relative memeContainer">
                 <img className="img-fluid" src={currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <figcaption className={s.position + " " + font + " " + color} key={index}>
+                  return <figcaption className={s.position + " " + font + " text-" + color.split("-")[0]} key={index}>
                     {sentences[index]}</figcaption>
                   // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
                   //al momento della creazione di sentences
@@ -384,11 +413,15 @@ function NewMemeModal(props) {
         <Form.Group>
           <Form.Group controlId="exampleForm.ControlSelect2">
             <Form.Label>Choose a color for the text?</Form.Label>
-            <Form.Control as="select" value={color} onChange={(ev) => setColor(ev.target.value)}>
+            <Form.Control as="select" value={ color.split("-")[1]} onChange={(ev) => handleColor(ev.target.value)}>
               <option>Black</option>
               <option>White</option>
               <option>Red</option>
               <option>Blue</option>
+              <option>Light Blue</option>
+              <option>Yellow</option>
+              <option>Green</option>
+              <option>Violet</option>
             </Form.Control>
           </Form.Group>
         </Form.Group>
@@ -443,6 +476,34 @@ function CopyMemeModal(props) {
 
   //Contiene il colore del meme in fase di creazione
   const [color, setColor] = useState(location.state ? location.state.color : "Black");
+  const handleColor = (value) => {
+    switch(value){
+      case "Yellow":
+        setColor("warning");
+        break;
+      case "Red":
+        setColor("danger");
+        break;
+      case "White":
+        setColor("light");
+        break;
+      case "Blue":
+        setColor("primary");
+        break;
+      case "Light Blue":
+        setColor("info");
+        break;
+      case "Green":
+        setColor("success");
+        break;
+      case "Violet":
+        setColor("secondary");
+        break;
+      default:
+        setColor("dark");
+        break;
+    }
+  }
   //Contiene il font del meme in fase di creazione
   const [font, setFont] = useState(location.state ? location.state.font : "font1");
 
@@ -567,7 +628,7 @@ function CopyMemeModal(props) {
               <figure className="position-relative memeContainer">
                 <img className="img-fluid" src={"/" + currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <figcaption className={s.position + " " + font + " " + color} key={index}>
+                  return <figcaption className={s.position + " " + font + " text-" + color} key={index}>
                     {sentences[index]}</figcaption>
                   // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
                   //al momento della creazione di sentences
@@ -604,11 +665,15 @@ function CopyMemeModal(props) {
         <Form.Group>
           <Form.Group controlId="exampleForm.ControlSelect2">
             <Form.Label>Choose a color for the text?</Form.Label>
-            <Form.Control as="select" value={color} onChange={(ev) => setColor(ev.target.value)}>
+            <Form.Control as="select" value={color} onChange={(ev) => handleColor(ev.target.value)}>
               <option>Black</option>
               <option>White</option>
               <option>Red</option>
               <option>Blue</option>
+              <option>Light Blue</option>
+              <option>Yellow</option>
+              <option>Green</option>
+              <option>Violet</option>
             </Form.Control>
           </Form.Group>
         </Form.Group>
