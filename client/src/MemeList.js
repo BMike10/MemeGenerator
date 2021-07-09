@@ -330,7 +330,9 @@ function NewMemeModal(props) {
       console.log(meme);
       props.addMeme(meme);
       props.onHide(false);
-      //Clean state
+
+      //Clean state -> Close of modal does not clean state automatically
+      //Questo può essere fatto anche nel caso in cui non si fa il submit, ma può essere utile mantenere lo stato precedente in quel caso
       setColor("");
       setTitle("");
       setVisibility(0);

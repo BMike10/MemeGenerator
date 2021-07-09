@@ -26,6 +26,18 @@ async function getAllMeme() {
     }
 }
 
+async function getPublicMeme() {
+    const response = await fetch(BASEURL + '/meme/publicMeme');
+    const memeJson = await response.json();
+    if (response.ok) {
+
+        return memeJson;
+    } else {
+        throw memeJson;  // An object with the error coming from the server
+    }
+}
+
+
 async function getMemeByCreator(creatorId) {
     const response = await fetch(BASEURL + '/creator/' + creatorId + '/meme');
     const memeJson = await response.json();
@@ -177,7 +189,8 @@ const API = {
     addMeme,
     addSentence,
     deleteMeme,
-    deleteSentence
+    deleteSentence,
+    getPublicMeme
 };
 
 export default API;

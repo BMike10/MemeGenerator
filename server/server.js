@@ -81,6 +81,7 @@ Bozza possibili API:
 
 GET:
 GET /api/meme
+//GET /api/meme/publicMeme
 GET /api/memeTemplate
 GET /api/creator/:creatorId/meme
 GET /api/sessions/current
@@ -107,6 +108,17 @@ app.get('/api/meme', async (req, res) => {
   try {
     const meme = await meme_dao.listMeme();
     res.status(200).json(meme);
+  } catch (err) {
+    console.log(err);
+    res.status(500).end();
+  }
+})
+
+//GET /api/meme/publicMeme
+app.get('/api/meme/publicMeme', async (req, res) => {
+  try {
+    const publicMeme = await meme_dao.getPublicMeme();
+    res.status(200).json(publicMeme);
   } catch (err) {
     console.log(err);
     res.status(500).end();

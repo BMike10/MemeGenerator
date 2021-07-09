@@ -69,7 +69,7 @@ function App() {
   //di scaricarli tutti perchè li devo sempre visualizzare insieme?
   useEffect(() => {
     const getMeme = async () => {
-      const meme = await API.getAllMeme();
+      const meme = loggedIn? await API.getAllMeme() : await API.getPublicMeme();    //Un utente non loggato scarica solo i meme pubblici
       setMeme(meme);
       setDirtyMeme(false);
     };
@@ -233,7 +233,7 @@ function App() {
               <Row className="h-100">
                 <Container fluid className="p-4">
                   <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                  <MemeList meme={meme.filter((m) => m.visibility === 1)} memeTemplates={memeTemplates}
+                  <MemeList meme={meme} memeTemplates={memeTemplates}
                   />
                 </Container>
               </Row>

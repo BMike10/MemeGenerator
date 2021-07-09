@@ -145,6 +145,45 @@ exports.listMeme = () => {
     });
 };
 
+exports.getPublicMeme = () => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
+        m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId, s.id as sentenceId
+        FROM Meme m, Creators c, SentencesMeme s
+        WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId AND m.visibility=1`;
+        db.all(sql, (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            console.log(rows);
+            const meme = [];
+            for (i = 0; i < rows.length; i++) {
+                key = rows[i].id;
+                elementIndex = meme.findIndex((m) => m.id === key);
+                if (elementIndex !== -1) {
+                    meme[elementIndex] = {
+                        ...meme[elementIndex],
+                        sentences: [...meme[elementIndex].sentences, { id: rows[i].sentenceId, text: rows[i].text, position: "" }]
+                    };
+                } else {
+                    meme.push({
+                        id: rows[i].id,                 
+                        title: rows[i].title,          
+                        visibility: rows[i].visibility,
+                        color: rows[i].color,
+                        font: rows[i].font,
+                        templateId: rows[i].templateId,
+                        creator: { id: rows[i].creatorId, username: rows[i].creatorUsername },
+                        sentences: [{ id: rows[i].sentenceId, text: rows[i].text, position: "" }]           
+                    })
+                }
+            }
+            resolve(meme);
+        });
+    });
+};
+
 // get the meme identified by {id} -> To delete, update ecc
 exports.getMemeByCreator = (userId) => {
     return new Promise((resolve, reject) => {
