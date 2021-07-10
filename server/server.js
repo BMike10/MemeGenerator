@@ -159,101 +159,137 @@ app.post('/api/meme', isLoggedIn, [
   check('visibility').isInt({ min: 0, max: 1 }),
   check('templateId').isInt({ min: 0 }),
   check('creatorId').isInt({ min: 0 }),
-  check('title').isLength({ min: 1, max: 20 }),
+  check('title').isLength({ min: 1, max: 100 }).withMessage("Title is too large(>100) or does not exist "),
+  check('color').isIn(["danger", "warning", "dark", "secondary", "success", "info", "primary", "light"]).withMessage('Color not accepted'),
+  check('font').isIn(["font1", "font2", "font3", "font4"]).withMessage('Font not accepted')
 ], async (req, res) => {
 
-    //Se qualche check non è andato a buon fine
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() })
+  //Controlli sul meme eseguiti -> ToDo: Controlli sulle frasi:
+  let emptySentences = 0
+  req.body.sentences.map((s) => {
+    //Check on memeId
+    if (Number.isInteger(s.memeId) && s.memeId > 0) {
+      //Check on sentensesTemplateId
+      if (Number.isInteger(s.sentencesTemplateId) && s.sentencesTemplateId > 0) {
+        //Check on text(isString && length<200)
+        if (typeof s.text === 'string' || s.text instanceof String && s.text.length < 200) {
+          //check almost one no empty text 
+          if (s.text.length > 0) {
+            emptySentences++;
+          }
+        } else {
+          return res.status(422).json({ errors: "Text is not a string or is too large. Please, fix it." });
+        }
+      } else {
+        return res.status(422).json({ errors: "SentencesTemplateId is not correct. Please, fix it." });
+      }
+    } else {
+      return res.status(422).json({ errors: "MemeId is not correct. Please, fix it." });
     }
-    //ToDo : VALIDAZIONE SU COLOR E FONT -> Compresi all'interno delle cassi predefinite
-
-    const meme = {
-      title: req.body.title,
-      visibility: req.body.visibility,
-      color: req.body.color,
-      font: req.body.font,
-      templateId: req.body.templateId,
-      creatorId: req.body.creatorId
-    };
-
-    try {
-      //req.body.creatorId dovrebbe già contenere l'utente che sta creando il meme, ma per evitare problematiche sfruttiamo
-      //req.user.id che è invece 'utente corrente che gestiamo con passport
-      const result = await meme_dao.createMeme(meme, req.user.id);
-      //TimeOut per visualizzare i momenti di attesta attraverso uno stato 
-      //setTimeout(() => res.status(201).end(), 2000);
-      res.json(result);
-
-    } catch (err) {
-      res.status(503).json({ error: `Database error during creation of a meme.` });
-    }
-
   })
 
-  //POST /api/sentences -> Nuovo meme
-app.post('/api/sentences', isLoggedIn, [
-  check('memeId').isInt({ min: 0 }),
-  check('sentencesTemplateId').isInt({ min: 0 }),
-  check('text').isLength({ min: 0, max: 100 }),
-], async (req, res) => {
-    //da controllare anche che almeno uno dei tesi abbia almeno un testo
-    
-    //Se qualche check non è andato a buon fine
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() })
-    }
+  //Se qualche check non è andato a buon fine
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  const meme = {
+    title: req.body.title,
+    visibility: req.body.visibility,
+    color: req.body.color,
+    font: req.body.font,
+    templateId: req.body.templateId,
+    creatorId: req.body.creatorId
+  };
 
-    const sentence = {
-      text: req.body.text,
-      memeId: req.body.memeId,
-      sentencesTemplateId: req.body.sentencesTemplateId
-    };
+  try {
+    //req.body.creatorId dovrebbe già contenere l'utente che sta creando il meme, ma per evitare problematiche sfruttiamo
+    //req.user.id che è invece 'utente corrente che gestiamo con passport
+    const result = await meme_dao.createMeme(meme, req.user.id);
 
+    //Adesso abbiamo il memeId, posso costruire le frasi e aggiungerle alla tabella
     try {
-      await meme_dao.createSentence(sentence);
-      //TimeOut per visualizzare i momenti di attesta attraverso uno stato 
-      setTimeout(() => res.status(201).end(), 2000);
+      const sentences = req.body.sentences.map(s => {
+        return { text: s.text, sentencesTemplateId: s.sentencesTemplateId, memeId: result };
+      });
 
+      for (let i = 0; i < sentences.length; i++) {
+        await meme_dao.createSentence(sentences[i]);
+      }
     } catch (err) {
-      res.status(503).json({ error: `Database error during creation of a meme.` });
+      res.status(503).json({ error: `Database error during creation of sentences.` });
     }
 
-  })
+    res.json(result);
+
+  } catch (err) {
+    res.status(503).json({ error: `Database error during creation of a meme.` });
+  }
+
+})
+
+//   //POST /api/sentences -> Nuovo meme
+// app.post('/api/sentences', isLoggedIn, [
+//   check('memeId').isInt({ min: 0 }),
+//   check('sentencesTemplateId').isInt({ min: 0 }),
+//   check('text').isLength({ min: 0, max: 100 }),
+// ], async (req, res) => {
+//     //da controllare anche che almeno uno dei tesi abbia almeno un testo
+
+//     //Se qualche check non è andato a buon fine
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(422).json({ errors: errors.array() })
+//     }
+
+//     const sentence = {
+//       text: req.body.text,
+//       memeId: req.body.memeId,
+//       sentencesTemplateId: req.body.sentencesTemplateId
+//     };
+
+//     try {
+//       await meme_dao.createSentence(sentence);
+//       //TimeOut per visualizzare i momenti di attesta attraverso uno stato 
+//       setTimeout(() => res.status(201).end(), 2000);
+
+//     } catch (err) {
+//       res.status(503).json({ error: `Database error during creation of a meme.` });
+//     }
+
+//   })
 
 
 //DELETE
 
 // DELETE /api/meme/:id
-app.delete('/api/meme/:id',isLoggedIn ,param('id').isInt({ min: 1}), async function (req, res) {
+app.delete('/api/meme/:id', isLoggedIn, param('id').isInt({ min: 1 }), async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array() })
   }
   try {
-      await meme_dao.deleteMeme(req.params.id,req.user.id);
-      res.status(204).end();
+    await meme_dao.deleteMeme(req.params.id, req.user.id);
+    res.status(204).end();
 
   } catch (err) {
     console.log(err);
-      res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
+    res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
   }
 });
 
 // DELETE /api/sentences/:id
-app.delete('/api/sentences/:id',isLoggedIn ,param('id').isInt({ min: 1}), async function (req, res) {
+app.delete('/api/sentences/:id', isLoggedIn, param('id').isInt({ min: 1 }), async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array() })
   }
   try {
-      await meme_dao.deleteSentence(req.params.id);
-      res.status(204).end();
+    await meme_dao.deleteSentence(req.params.id);
+    res.status(204).end();
 
   } catch (err) {
-      res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
+    res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
   }
 });
 
@@ -262,23 +298,23 @@ app.delete('/api/sentences/:id',isLoggedIn ,param('id').isInt({ min: 1}), async 
 
 // POST /sessions 
 // login
-app.post('/api/sessions', function(req, res, next) {
+app.post('/api/sessions', function (req, res, next) {
   passport.authenticate('local', (err, user, info) => {
     if (err)
       return next(err);
-      if (!user) {
-        // display wrong login messages
-        return res.status(401).json(info);
-      }
-      // success, perform the login
-      req.login(user, (err) => {
-        if (err)
-          return next(err);
+    if (!user) {
+      // display wrong login messages
+      return res.status(401).json(info);
+    }
+    // success, perform the login
+    req.login(user, (err) => {
+      if (err)
+        return next(err);
 
-        // req.user contains the authenticated user, we send all the user info back
-        // this is coming from userDao.getUser()
-        return res.json(req.user);
-      });
+      // req.user contains the authenticated user, we send all the user info back
+      // this is coming from userDao.getUser()
+      return res.json(req.user);
+    });
   })(req, res, next);
 });
 
@@ -293,10 +329,11 @@ app.delete('/api/sessions/current', (req, res) => {
 // GET /sessions/current
 // check whether the user is logged in or not
 app.get('/api/sessions/current', (req, res) => {
-  if(req.isAuthenticated()) {
-    res.status(200).json(req.user);}
+  if (req.isAuthenticated()) {
+    res.status(200).json(req.user);
+  }
   else
-    res.status(401).json({error: 'Unauthenticated user!'});;
+    res.status(401).json({ error: 'Unauthenticated user!' });;
 });
 
 

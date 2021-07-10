@@ -77,28 +77,28 @@ function addMeme(meme) {
     });
 }
 
-//Add sentence
-function addSentence(sentence) {
-    return new Promise((resolve, reject) => {
-        //Update DB
-        fetch(BASEURL + "/sentences", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(sentence),
-        }).then((response) => {
-            if (response.ok) {
-                resolve(null);
-            } else {
-                // analyze the cause of error
-                response.json()
-                    .then((obj) => { reject(obj); }) // error msg in the response body
-                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
-            }
-        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
-    });
-}
+// //Add sentence
+// function addSentence(sentence) {
+//     return new Promise((resolve, reject) => {
+//         //Update DB
+//         fetch(BASEURL + "/sentences", {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(sentence),
+//         }).then((response) => {
+//             if (response.ok) {
+//                 resolve(null);
+//             } else {
+//                 // analyze the cause of error
+//                 response.json()
+//                     .then((obj) => { reject(obj); }) // error msg in the response body
+//                     .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+//             }
+//         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+//     });
+// }
 
 //DELETE
 
@@ -187,7 +187,7 @@ const API = {
     getAllMeme,
     getMemeByCreator,
     addMeme,
-    addSentence,
+    /*addSentence,*/
     deleteMeme,
     deleteSentence,
     getPublicMeme

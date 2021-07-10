@@ -223,7 +223,7 @@ function NewMemeModal(props) {
         setColor("secondary-Violet");
         break;
       default:
-        setColor("dark");
+        setColor("dark-Black");
         break;
     }
   }

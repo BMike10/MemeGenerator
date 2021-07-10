@@ -126,16 +126,17 @@ function App() {
       title: m.title, img: m.img,
       font: m.font, color: m.color, visibility: m.visibility,
       creatorId: m.creator.id,
-      templateId: m.templateId
+      templateId: m.templateId,
+      sentences: sentences
     })
-      .then((memeId) => {
-        addSentences(sentences.map((s) => {
-          return {
-            ...s,
-            memeId: memeId
-          }
-        }))
-      })
+      // .then((memeId) => {
+      //   addSentences(sentences.map((s) => {
+      //     return {
+      //       ...s,
+      //       memeId: memeId
+      //     }
+      //   }))
+      // })
       .then(() => setDirtyMeme(true))
       .catch(err => {
         //setErrorMsg("Impossible to upload sentences! Please, try again later...");
@@ -143,22 +144,22 @@ function App() {
       });
   };
 
-  //Aggiunta di frasi relativi ad un meme aggiunto (Viene chiamata in conseguenza alla aggiunta di un meme)
-  const addSentences = (sentences) => {
-    let promises = []
-    for (let i = 0; i < sentences.length; i++) {
-      const promise = API.addSentence(sentences[i]);
-      promises.push(promise);
-    }
-    Promise.all(promises).then(
-      () => {
-        console.log("OK");
-      }
-    ).catch(err => {
-      //setErrorMsg("Impossible to upload sentences! Please, try again later...");
-      console.error(err);
-    });
-  };
+  // //Aggiunta di frasi relativi ad un meme aggiunto (Viene chiamata in conseguenza alla aggiunta di un meme)
+  // const addSentences = (sentences) => {
+  //   let promises = []
+  //   for (let i = 0; i < sentences.length; i++) {
+  //     const promise = API.addSentence(sentences[i]);
+  //     promises.push(promise);
+  //   }
+  //   Promise.all(promises).then(
+  //     () => {
+  //       console.log("OK");
+  //     }
+  //   ).catch(err => {
+  //     //setErrorMsg("Impossible to upload sentences! Please, try again later...");
+  //     console.error(err);
+  //   });
+  // };
 
   //Eliminazione di un meme
   const deleteMeme = (id, sentencesId) => {
