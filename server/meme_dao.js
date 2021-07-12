@@ -274,11 +274,11 @@ exports.deleteMeme = (memeId,userId) => {
     });
 }
 
-// delete an existing sentence -> Qui non controllo lo user perchè viene chiamata insieme alla deleteMeme che lo controlla 
-exports.deleteSentence = (sentenceId) => {
+// delete an existing sentence 
+exports.deleteSentence = (memeId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'DELETE FROM SentencesMeme WHERE id = ? ';
-        db.run(sql, [sentenceId], function (err) {
+        const sql = 'DELETE FROM SentencesMeme WHERE memeId = ?';
+        db.run(sql, [memeId], function (err) {
             if (err || this.changes===0) {
                 reject(err);
                 return;

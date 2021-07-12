@@ -177,7 +177,6 @@ function App() {
     });
     //A questo punto avviene l'effettiva eliminazione dal db. Cambio il valore del dirty cosi da ricaricare
     API.deleteMeme(id)
-      .then(() => deleteSentences(sentencesId))
       .then(() => setDirtyMeme(true))
       .catch(err => {
         //setErrorMsg("Impossible to upload sentences! Please, try again later...");
@@ -185,22 +184,22 @@ function App() {
       });
   };
 
-  //Rimozione di frasi relative ad un meme eliminato (Viene chiamata in conseguenza alla rimozione di un meme)
-  const deleteSentences = (sentencesId) => {
-    let promises = []
-    for (let i = 0; i < sentencesId.length; i++) {
-      const promise = API.deleteSentence(sentencesId[i]);
-      promises.push(promise);
-    }
-    Promise.all(promises).then(
-      () => {
-        console.log("OK");
-      }
-    ).catch(err => {
-      //setErrorMsg("Impossible to upload sentences! Please, try again later...");
-      console.error(err);
-    });
-  };
+  // //Rimozione di frasi relative ad un meme eliminato (Viene chiamata in conseguenza alla rimozione di un meme)
+  // const deleteSentences = (sentencesId) => {
+  //   let promises = []
+  //   for (let i = 0; i < sentencesId.length; i++) {
+  //     const promise = API.deleteSentence(sentencesId[i]);
+  //     promises.push(promise);
+  //   }
+  //   Promise.all(promises).then(
+  //     () => {
+  //       console.log("OK");
+  //     }
+  //   ).catch(err => {
+  //     //setErrorMsg("Impossible to upload sentences! Please, try again later...");
+  //     console.error(err);
+  //   });
+  // };
 
   //Funzioni per il login e logout dell'utente
   const doLogIn = async (credentials) => {

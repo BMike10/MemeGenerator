@@ -120,23 +120,23 @@ function deleteMeme(id) {
     });
 }
 
-//Delete sentence
-function deleteSentence(id) {
-    return new Promise((resolve, reject) => {
-        fetch(BASEURL + '/sentences/' + id, {
-            method: 'DELETE',
-        }).then((response) => {
-            if (response.ok) {
-                resolve(null);
-            } else {
-                // analyze the cause of error
-                response.json()
-                    .then((obj) => { reject(obj); }) // error msg in the response body
-                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
-            }
-        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
-    });
-}
+// //Delete sentence
+// function deleteSentence(id) {
+//     return new Promise((resolve, reject) => {
+//         fetch(BASEURL + '/sentences/' + id, {
+//             method: 'DELETE',
+//         }).then((response) => {
+//             if (response.ok) {
+//                 resolve(null);
+//             } else {
+//                 // analyze the cause of error
+//                 response.json()
+//                     .then((obj) => { reject(obj); }) // error msg in the response body
+//                     .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+//             }
+//         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+//     });
+// }
 
 //LOGIN/LOGOUT API
 async function logIn(credentials) {
@@ -189,7 +189,7 @@ const API = {
     addMeme,
     /*addSentence,*/
     deleteMeme,
-    deleteSentence,
+    /*deleteSentence,*/
     getPublicMeme
 };
 

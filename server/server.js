@@ -157,7 +157,7 @@ app.get('/api/creator/:creatorId/meme', async (req, res) => {
 //POST /api/meme -> Nuovo meme
 app.post('/api/meme', isLoggedIn, [
   check('visibility').isInt({ min: 0, max: 1 }),
-  check('templateId').isInt({ min: 0 }),
+  check('templateId').isIn([1, 2, 3, 4, 5, 6]),
   check('creatorId').isInt({ min: 0 }),
   check('title').isLength({ min: 1, max: 100 }).withMessage("Title is too large(>100) or does not exist "),
   check('color').isIn(["danger", "warning", "dark", "secondary", "success", "info", "primary", "light"]).withMessage('Color not accepted'),
@@ -167,14 +167,13 @@ app.post('/api/meme', isLoggedIn, [
   //Controlli sul meme eseguiti -> ToDo: Controlli sulle frasi:
   let emptySentences = 0
   req.body.sentences.map((s) => {
-    //Check on memeId
-    if (Number.isInteger(s.memeId) && s.memeId > 0) {
+
       //Check on sentensesTemplateId
       if (Number.isInteger(s.sentencesTemplateId) && s.sentencesTemplateId > 0) {
         //Check on text(isString && length<200)
         if (typeof s.text === 'string' || s.text instanceof String && s.text.length < 200) {
           //check almost one no empty text 
-          if (s.text.length > 0) {
+          if (s.text.length === 0) {
             emptySentences++;
           }
         } else {
@@ -183,10 +182,11 @@ app.post('/api/meme', isLoggedIn, [
       } else {
         return res.status(422).json({ errors: "SentencesTemplateId is not correct. Please, fix it." });
       }
-    } else {
-      return res.status(422).json({ errors: "MemeId is not correct. Please, fix it." });
-    }
   })
+
+  if (emptySentences > 0) {
+    return res.status(422).json({ errors: "Almost one text must be wrote. Please, fix it." });
+  }
 
   //Se qualche check non è andato a buon fine
   const errors = validationResult(req);
@@ -270,6 +270,12 @@ app.delete('/api/meme/:id', isLoggedIn, param('id').isInt({ min: 1 }), async fun
   }
   try {
     await meme_dao.deleteMeme(req.params.id, req.user.id);
+
+    try {
+      await meme_dao.deleteSentence(req.params.id);
+    } catch (err) {
+      res.status(503).json({ error: `Database error during deletion of sentences.` });
+    }
     res.status(204).end();
 
   } catch (err) {
@@ -278,20 +284,20 @@ app.delete('/api/meme/:id', isLoggedIn, param('id').isInt({ min: 1 }), async fun
   }
 });
 
-// DELETE /api/sentences/:id
-app.delete('/api/sentences/:id', isLoggedIn, param('id').isInt({ min: 1 }), async function (req, res) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
-  }
-  try {
-    await meme_dao.deleteSentence(req.params.id);
-    res.status(204).end();
+// // DELETE /api/sentences/:id
+// app.delete('/api/sentences/:id', isLoggedIn, param('id').isInt({ min: 1 }), async function (req, res) {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     return res.status(422).json({ errors: errors.array() })
+//   }
+//   try {
+//     await meme_dao.deleteSentence(req.params.id);
+//     res.status(204).end();
 
-  } catch (err) {
-    res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
-  }
-});
+//   } catch (err) {
+//     res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
+//   }
+// });
 
 
 /*** Users APIs ***/
