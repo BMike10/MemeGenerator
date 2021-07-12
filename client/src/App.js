@@ -54,7 +54,6 @@ function App() {
   //Per mostrare dei messaggi d'errore
   const [message, setMessage] = useState('');
 
-
   //Use Effect:
 
   //Scarico dal db i template delle immagini del sito
@@ -145,10 +144,7 @@ function App() {
       //   }))
       // })
       .then(() => setDirtyMeme(true))
-      .catch(err => {
-        //setErrorMsg("Impossible to upload sentences! Please, try again later...");
-        console.error(err);
-      });
+      .catch(err => handleErrors(err));
   };
 
   // //Aggiunta di frasi relativi ad un meme aggiunto (Viene chiamata in conseguenza alla aggiunta di un meme)
@@ -185,10 +181,7 @@ function App() {
     //A questo punto avviene l'effettiva eliminazione dal db. Cambio il valore del dirty cosi da ricaricare
     API.deleteMeme(id)
       .then(() => setDirtyMeme(true))
-      .catch(err => {
-        //setErrorMsg("Impossible to upload sentences! Please, try again later...");
-        console.error(err);
-      });
+      .catch(err => handleErrors(err));
   };
 
   // //Rimozione di frasi relative ad un meme eliminato (Viene chiamata in conseguenza alla rimozione di un meme)
@@ -214,14 +207,15 @@ function App() {
       const user = await API.logIn(credentials);
       setCurrentUser(user);
       setLoggedIn(true);
-      setMessage({msg: `Welcome, ${user.username}!`, type: 'success'});
+      setMessage({ msg: `Welcome, ${user.username}!`, type: 'success' });
     } catch (err) {
-      setMessage({msg: err, type: 'danger'});
+      setMessage({ msg: err, type: 'danger' });
     }
   }
 
   const doLogOut = async () => {
     await API.logOut();
+    setMessage("");
     setLoggedIn(false);
     setCurrentUser(null);
     // Non è necessario pulire perchè i meme li posso vedere anche se non sono loggato
@@ -230,11 +224,11 @@ function App() {
 
   //Funzione per la gestione degli errori:
   const handleErrors = (err) => {
-    if(err.errors)
-      setMessage({msg: err.errors[0].msg + ': ' + err.errors[0].param, type: 'danger'});
+    if (err.errors)
+      setMessage({ msg: err.errors[0].msg + ': ' + err.errors[0].param, type: 'danger' });
     else
-      setMessage({msg: err.error, type: 'danger'});
-    
+      setMessage({ msg: err.error, type: 'danger' });
+
     setDirtyMeme(true);
   }
 
@@ -242,8 +236,10 @@ function App() {
     <Router>
       <MyNavBar loggedIn={loggedIn} logout={doLogOut} />
       {message && <Row>
-         <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
-      </Row> }
+        <Container fluid className=" px-5 pt-2">
+          <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
+        </Container>
+      </Row>}
       <Switch>
         {/*Route home visualizzatore -> Vengono visualizzate i meme già creati pubblici*/}
         <Route exact path='/' render={() =>

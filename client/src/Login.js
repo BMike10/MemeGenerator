@@ -28,26 +28,28 @@ function LoginForm(props) {
 
     return (
 
-        <Container fluid className="vh-100 p-5" >
-            <Row className="justify-content-md-center">
-                <Form>
-                    {errorMessage ? <Alert variant='danger'>{errorMessage}</Alert> : ''}
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control type="username" placeholder="Enter username" value={username} onChange={ev => setUsername(ev.target.value)} />
-                        <Form.Text className="text-muted">
-                            We'll never share your username with anyone else.
-                        </Form.Text>
-                    </Form.Group>
+        <Container fluid className="vh-100 w-100 px-5 pt-2 " >
+            <Row className="justify-content-md-center pt-5">
+                <div className="formLogin bg-light" >
+                    <Form>
+                        {errorMessage ? <Alert variant='danger'>{errorMessage}</Alert> : ''}
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type="username" placeholder="Enter username" value={username} onChange={ev => setUsername(ev.target.value)} />
+                            <Form.Text className="text-muted">
+                                We'll never share your username with anyone else.
+                            </Form.Text>
+                        </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" value={password} onChange={ev => setPassword(ev.target.value)} />
-                    </Form.Group>
-                    <Button variant="primary" type="submit" onClick={handleSubmit}>
-                        Submit
-                    </Button>
-                </Form>
+                        <Form.Group controlId="formBasicPassword">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" placeholder="Password" value={password} onChange={ev => setPassword(ev.target.value)} />
+                        </Form.Group>
+                        <Button variant="primary" type="submit" onClick={handleSubmit}>
+                            Submit
+                        </Button>
+                    </Form>
+                </div>
             </Row>
         </Container>
 

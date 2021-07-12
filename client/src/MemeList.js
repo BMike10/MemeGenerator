@@ -74,8 +74,8 @@ function MemeList(props) {
         }
 
       </ListGroup>
-      {props.loggedIn? <Button variant="primary" size="lg" className="fixed-right-bottom" onClick={() => handleModalNewMeme(true)}>+</Button> : null }
-      
+      {props.loggedIn ? <Button variant="primary" size="lg" className="fixed-right-bottom" onClick={() => handleModalNewMeme(true)}>+</Button> : null}
+
     </>
   )
 }
@@ -168,7 +168,7 @@ function MemeSelectedModal(props) {
                 className="img-fluid" >
               </img>
               {props.memeTemplate.sentences.map((s, index) => {
-                return <figcaption className={s.position + " " + props.meme.font + " text-" + props.meme.color} key={index}>
+                return <figcaption className={s.position + " " + props.meme.font + " text-" + props.meme.color.split("-")[0]} key={index}>
                   {props.meme.sentences[index].text}</figcaption>
               })}
             </figure>
@@ -189,6 +189,10 @@ function NewMemeModal(props) {
 
   //Contiene l'eventuale errore che non permette di effettuare il submit
   const [error, setError] = useState("");
+  const resetErrors = () => {
+    setError("");
+    props.onHide(false);
+  }
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
@@ -320,7 +324,7 @@ function NewMemeModal(props) {
             position: s.position
           }
         }),
-        font: font, color: color.split("-")[0], public: pubblico,
+        font: font, color: color, public: pubblico,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         //Viene passato lo user corrente per cui cambia il proprietario
         templateId: currentMemeTemplate.id,
@@ -334,6 +338,7 @@ function NewMemeModal(props) {
 
       //Clean state -> Close of modal does not clean state automatically
       //Questo può essere fatto anche nel caso in cui non si fa il submit, ma può essere utile mantenere lo stato precedente in quel caso
+      setError("");
       setColor("");
       setTitle("");
       setPubblico(0);
@@ -353,12 +358,11 @@ function NewMemeModal(props) {
     size="lg"
     centered
   >
-    <Modal.Header closeButton onClick={() => props.onHide(false)} >
+    <Modal.Header closeButton onClick={resetErrors} >
       <Modal.Title>Creating new meme...</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <Form>
-        {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
         <Form.Group as={Row} controlId="formPlaintextCreator">
           <Form.Label column sm="2">
             Title:
@@ -445,10 +449,11 @@ function NewMemeModal(props) {
               </Form.Group>
             </> : null
         }
+        {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
       </Form>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={() => props.onHide(false)}>
+      <Button variant="secondary" onClick={resetErrors}>
         Close
       </Button>
       <Button variant="primary" onClick={handleSubmit}>Publish</Button>
@@ -595,7 +600,7 @@ function CopyMemeModal(props) {
             position: s.position
           }
         }),
-        font: font, color: color.split("-")[0], public: pubblico,
+        font: font, color: color, public: pubblico,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         //Viene passato lo user corrente per cui cambia il proprietario
         templateId: currentMemeTemplate.id,
@@ -631,7 +636,6 @@ function CopyMemeModal(props) {
     </Modal.Header>
     <Modal.Body>
       <Form>
-        {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
         <Form.Group as={Row} controlId="formPlaintextCreator">
           <Form.Label column sm="2">
             Title:
@@ -647,7 +651,7 @@ function CopyMemeModal(props) {
               <figure className="position-relative memeContainer">
                 <img className="img-fluid" src={"/" + currentMemeTemplate.img} ></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <figcaption className={s.position + " " + font + " text-" + color} key={index}>
+                  return <figcaption className={s.position + " " + font + " text-" + color.split("-")[0]} key={index}>
                     {sentences[index]}</figcaption>
                   // Ricorda che l'associazione tra sentences[index] e currentMemeTemplate.s[index] è garantita
                   //al momento della creazione di sentences
@@ -713,6 +717,7 @@ function CopyMemeModal(props) {
             </> : null
         }
       </Form>
+      {error ? <Alert variant='danger' onClose={() => setError('')} dismissible>{error}</Alert> : false}
     </Modal.Body>
     <Modal.Footer>
       <Link to="/home"><Button variant="secondary" >Close</Button></Link>

@@ -275,3 +275,17 @@
   border-radius: 50%;
 
 }
+
+/* Login Form*/
+.formLogin{
+  border-radius: 40px;
+  color: #fff;
+  padding: 3%;
+  width: 40%;
+  font-size: 18px;
+  box-shadow: 5px 5px 5px 5px rgba(53, 58, 64, 225);
+}
+
+.radius{
+  border-radius: 20px;
+}

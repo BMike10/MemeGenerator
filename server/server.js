@@ -160,7 +160,7 @@ app.post('/api/meme', isLoggedIn, [
   check('templateId').isIn([1, 2, 3, 4, 5, 6]),
   check('creatorId').isInt({ min: 0 }),
   check('title').isLength({ min: 1, max: 100 }).withMessage("Title is too large(>100) or does not exist "),
-  check('color').isIn(["danger", "warning", "dark", "secondary", "success", "info", "primary", "light"]).withMessage('Color not accepted'),
+  check('color').isIn(["danger-Red", "warning-Yellow", "dark-Black", "secondary-Violet", "success-Green", "info-Light Blue", "primary-Blue", "light-White"]).withMessage('Color not accepted'),
   check('font').isIn(["font1", "font2", "font3", "font4"]).withMessage('Font not accepted')
 ], async (req, res) => {
 
