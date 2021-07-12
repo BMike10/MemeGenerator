@@ -164,6 +164,66 @@
 
 }
 
+/* Bottom left text */
+.bottom_left_3texts_2 {
+  position: absolute;
+  bottom: 35px;
+  left: 100px;
+  color: black;
+  /* background-color: black; */
+  word-wrap: break-word;
+  max-width:110px;
+
+}
+
+/* Bottom center text */
+.bottom_center_3texts_2 {
+  position: absolute;
+  bottom: 35px;
+  right: 330px;
+  color: black;
+  /* background-color: black; */
+  word-wrap: break-word;
+  max-width:110px;
+
+}
+
+/* Bottom right text */
+.bottom_rigth_3texts_2 {
+  position: absolute;
+  bottom: 35px;
+  right: 120px;
+  color: black;
+  /* background-color: black; */
+  word-wrap: break-word;
+  max-width:110px;
+
+}
+
+/* Bottom center text */
+.bottom_center_2texts {
+  position: absolute;
+  bottom: 25px;
+  right: 310px;
+  color: black;
+  /* background-color: black; */
+  word-wrap: break-word;
+  max-width:110px;
+
+}
+
+/* Center text */
+.center_2texts {
+  position: absolute;
+  bottom: 320px;
+  right: 310px;
+  color: black;
+  /* background-color: black; */
+  word-wrap: break-word;
+  max-width:110px;
+
+}
+
 .font1 {
   font-family: Impact, fantasy;
   font-weight: bold;
