@@ -80,7 +80,7 @@ function App() {
       setLoading(false);
       setDirtyMeme(false);
     };
-    if (dirtyMeme || loggedIn) {
+    if (dirtyMeme) {
       getMeme().catch(err => {
         setMessage({ msg: 'Impossible to load meme! Please, try again later...', type: 'danger' });
         console.error(err);

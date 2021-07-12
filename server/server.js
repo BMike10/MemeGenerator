@@ -184,7 +184,7 @@ app.post('/api/meme', isLoggedIn, [
       }
   })
 
-  if (emptySentences > 0) {
+  if (emptySentences === req.body.sentences.length) {
     return res.status(422).json({ errors: "Almost one text must be wrote. Please, fix it." });
   }
 

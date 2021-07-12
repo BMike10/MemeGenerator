@@ -532,7 +532,6 @@ function CopyMemeModal(props) {
 
   //Gestione delle frasi. Vengono aggiornate quando inserisco testo. Vengono riazzerate quando viene cambiata base
   const handleSentences = (ev, i) => {
-    console.log(ev.target.value, i, sentences[i])
     //Se trovo gia l'elemento iesimo devo aggiornarlo -> Vedo se è diversa solo da undefined perchè potrebbe anche essere una stringa
     //vuota nel caso in cui cancello tutto dal testo e non passerebbe un normale controllo sentences[i]?
     sentences[i] !== undefined ? setSentences(oldSentences => {
@@ -589,20 +588,30 @@ function CopyMemeModal(props) {
       //NESSUNA VIOLAZIONE DI VINCOLO -> Creo nuovo meme e lo aggiungo a quelli disponibili -> L'Id sarà definito dal db
       const meme = {
         title: title, img: currentMemeTemplate.img,
-        sentences: [currentMemeTemplate.sentences.map((s, index) => {
+        sentences: currentMemeTemplate.sentences.map((s, index) => {
           return {
             sentencesTemplateId: s.id,
             text: sentences[index] ? sentences[index] : "",
             position: s.position
           }
-        })],
+        }),
         font: font, color: color.split("-")[0], public: pubblico,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
-        templateId: currentMemeTemplate.id
+        //Viene passato lo user corrente per cui cambia il proprietario
+        templateId: currentMemeTemplate.id,
+
       };
 
       //Aggiungo il nuovo meme alla lista dei tast
       props.addMeme(meme);
+
+      //Clean state -> Close of modal does not clean state automatically
+      //Questo può essere fatto anche nel caso in cui non si fa il submit, ma può essere utile mantenere lo stato precedente in quel caso
+      setColor("");
+      setTitle("");
+      setPubblico(0);
+      setFont("");
+      setSentences([]);
       routeChange();
     }
 
@@ -647,7 +656,7 @@ function CopyMemeModal(props) {
               <Container fluid >
                 {/* Per ognuno dei testi del template selezionato visualizzo il form */}
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
+                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}' key={index}>
                     <Form.Label column sm="2">
                       Text n.{index}
                     </Form.Label>
