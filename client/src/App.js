@@ -5,7 +5,7 @@ import MyNavBar from './MyNavBar';
 import { LoginForm } from './Login';
 import { MemeList, CopyMemeModal } from './MemeList';
 import React, { useState, useEffect } from 'react';
-import { Container, Row } from 'react-bootstrap';
+import { Container, Row, Alert } from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 //PROBLEMA1 : Perchè ogni volta non riesce una map o una filter di uno stato nonostante fossero questi sempre inizializzati?
@@ -48,6 +48,12 @@ function App() {
   //Mantiene l'utente corrente (Per mostrare i meme personali, cancellarli e crearli)
   const [currentUser, setCurrentUser] = useState(null);
 
+  //Per mostrare una schermata di caricamento durante le fetch più lunghe
+  const [loading, setLoading] = useState(true);
+
+  //Per mostrare dei messaggi d'errore
+  const [message, setMessage] = useState('');
+
 
   //Use Effect:
 
@@ -60,7 +66,7 @@ function App() {
     };
     getTemplate()
       .catch(err => {
-        //setMessage({ msg: "Impossible to load meme template! Please, try again later...", type: 'danger' });
+        setMessage({ msg: "Impossible to load meme template! Please, try again later...", type: 'danger' });
         console.error(err);
       });
   }, [loggedIn]);
@@ -69,13 +75,14 @@ function App() {
   //di scaricarli tutti perchè li devo sempre visualizzare insieme?
   useEffect(() => {
     const getMeme = async () => {
-      const meme = loggedIn? await API.getAllMeme() : await API.getPublicMeme();    //Un utente non loggato scarica solo i meme pubblici
+      const meme = loggedIn ? await API.getAllMeme() : await API.getPublicMeme();    //Un utente non loggato scarica solo i meme pubblici
       setMeme(meme);
+      setLoading(false);
       setDirtyMeme(false);
     };
     if (dirtyMeme || loggedIn) {
       getMeme().catch(err => {
-        //setMessage({ msg: 'Impossible to load your exams! Please, try again later...', type: 'danger' });
+        setMessage({ msg: 'Impossible to load meme! Please, try again later...', type: 'danger' });
         console.error(err);
       });
     }
@@ -207,9 +214,9 @@ function App() {
       const user = await API.logIn(credentials);
       setCurrentUser(user);
       setLoggedIn(true);
-      //setMessage({msg: `Welcome, ${user}!`, type: 'success'});
+      setMessage({msg: `Welcome, ${user.username}!`, type: 'success'});
     } catch (err) {
-      //setMessage({msg: err, type: 'danger'});
+      setMessage({msg: err, type: 'danger'});
     }
   }
 
@@ -221,10 +228,22 @@ function App() {
 
   }
 
+  //Funzione per la gestione degli errori:
+  const handleErrors = (err) => {
+    if(err.errors)
+      setMessage({msg: err.errors[0].msg + ': ' + err.errors[0].param, type: 'danger'});
+    else
+      setMessage({msg: err.error, type: 'danger'});
+    
+    setDirtyMeme(true);
+  }
 
   return (
     <Router>
       <MyNavBar loggedIn={loggedIn} logout={doLogOut} />
+      {message && <Row>
+         <Alert variant={message.type} onClose={() => setMessage('')} dismissible>{message.msg}</Alert>
+      </Row> }
       <Switch>
         {/*Route home visualizzatore -> Vengono visualizzate i meme già creati pubblici*/}
         <Route exact path='/' render={() =>
@@ -233,8 +252,7 @@ function App() {
               <Row className="h-100">
                 <Container fluid className="p-4">
                   <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                  <MemeList meme={meme} memeTemplates={memeTemplates}
-                  />
+                  {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> : <MemeList meme={meme} memeTemplates={memeTemplates} />}
                 </Container>
               </Row>
             </Container>
@@ -254,22 +272,22 @@ function App() {
                 <Row className="h-100">
                   <Container fluid className="p-4">
                     <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                    <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates}
-
-                    />
+                    {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> : <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates} />}
                     <h2 className="fs-1">My funny meme!</h2>
-                    <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
-                      id: undefined, title: "Create new meme", img: "make-meme.jpg",
-                      sentences: [], font: "font2", color: "",
-                      visibility: 1, creator: { id: currentUser.id, username: currentUser.username }
-                    })}
-                      loggedIn={loggedIn}
-                      memeTemplates={memeTemplates}
-                      addMeme={addMeme}
-                      deleteMeme={deleteMeme}    //Delete meme è passato solo da questa pagina e con questo componente,
-                      // Tutti gli altri non avranno questa props(sarà undefined)
-                      currentUser={currentUser}
-                    />
+                    {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> :
+                      <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
+                        id: undefined, title: "Create new meme", img: "make-meme.jpg",
+                        sentences: [], font: "font2", color: "",
+                        visibility: 1, creator: { id: currentUser.id, username: currentUser.username }
+                      })}
+                        loggedIn={loggedIn}
+                        memeTemplates={memeTemplates}
+                        addMeme={addMeme}
+                        deleteMeme={deleteMeme}    //Delete meme è passato solo da questa pagina e con questo componente,
+                        // Tutti gli altri non avranno questa props(sarà undefined)
+                        currentUser={currentUser}
+                      />}
+
                   </Container>
                 </Row>
               </Container> : <Redirect to="/" />

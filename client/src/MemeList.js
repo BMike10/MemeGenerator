@@ -97,11 +97,11 @@ function MemeCard(props) {
   }
 
   return <>
-    <Card style={{ width: '26rem' }} bg={statusClass}>  
-      <Card.Img variant="top" 
-      src={ props.path? (props.meme.id? "/" + props.memeTemplate.img : "/" + props.meme.img) :
-       (props.meme.id? props.memeTemplate.img : props.meme.img)} 
-       width={414} height={414} />
+    <Card style={{ width: '26rem' }} bg={statusClass}>
+      <Card.Img variant="top"
+        src={props.path ? (props.meme.id ? "/" + props.memeTemplate.img : "/" + props.meme.img) :
+          (props.meme.id ? props.memeTemplate.img : props.meme.img)}
+        width={414} height={414} />
       <Card.Body>
         <Card.Title>{props.meme.title}</Card.Title>
         <Card.Text>
@@ -166,7 +166,7 @@ function MemeSelectedModal(props) {
                 className="img-fluid" >
               </img>
               {props.memeTemplate.sentences.map((s, index) => {
-                return <figcaption className={s.position + " " + props.meme.font + " text-" +props.meme.color} key={index}>
+                return <figcaption className={s.position + " " + props.meme.font + " text-" + props.meme.color} key={index}>
                   {props.meme.sentences[index].text}</figcaption>
               })}
             </figure>
@@ -197,10 +197,9 @@ function NewMemeModal(props) {
 
 
   //Contiene il colore del meme in fase di creazione
-  const [color, setColor] = useState("Black");
+  const [color, setColor] = useState("dark-Black");
   const handleColor = (value) => {
-    const newValue = value.split("-")[1];
-    switch(value){
+    switch (value) {
       case "Yellow":
         setColor("warning-Yellow");
         break;
@@ -287,7 +286,7 @@ function NewMemeModal(props) {
     //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
     if (sentences && sentences.length !== 0) {
       sentences.map((s) => {
-        if (s.length > 100) {
+        if (s.length > 200) {
           err = true;
           setError("You seem to have written too large text, please edit it");
         }
@@ -302,7 +301,7 @@ function NewMemeModal(props) {
     if (!title || title.length < 5) {
       err = true;
       setError("The title is mandatory and must contain at least 5 characters")
-    } else if (title.length > 20) {
+    } else if (title.length > 100) {
       err = true;
       setError("Title is too large, please edit it");
     }
@@ -405,44 +404,45 @@ function NewMemeModal(props) {
                   </Form.Group>
                 })}
               </Container>
+
+              <Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>Choose your favorite font?</Form.Label>
+                  <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
+                    <option>font1</option>
+                    <option>font2</option>
+                    <option>font3</option>
+                    <option>font4</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Group>
+              <Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect2">
+                  <Form.Label>Choose a color for the text?</Form.Label>
+                  <Form.Control as="select" value={color.split("-")[1]} onChange={(ev) => handleColor(ev.target.value)}>
+                    <option>Black</option>
+                    <option>White</option>
+                    <option>Red</option>
+                    <option>Blue</option>
+                    <option>Light Blue</option>
+                    <option>Yellow</option>
+                    <option>Green</option>
+                    <option>Violet</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Group>
+              <Form.Group>
+                <Form.Check
+
+                  type="checkbox"
+                  label="Click here if you want to make this meme public"
+                  value={visibility}
+                  checked={visibility}
+                  onChange={handleVisibility}
+                />
+              </Form.Group>
             </> : null
         }
-        <Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect1">
-            <Form.Label>Choose your favorite font?</Form.Label>
-            <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
-              <option>font1</option>
-              <option>font2</option>
-              <option>font3</option>
-              <option>font4</option>
-            </Form.Control>
-          </Form.Group>
-        </Form.Group>
-        <Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect2">
-            <Form.Label>Choose a color for the text?</Form.Label>
-            <Form.Control as="select" value={ color.split("-")[1]} onChange={(ev) => handleColor(ev.target.value)}>
-              <option>Black</option>
-              <option>White</option>
-              <option>Red</option>
-              <option>Blue</option>
-              <option>Light Blue</option>
-              <option>Yellow</option>
-              <option>Green</option>
-              <option>Violet</option>
-            </Form.Control>
-          </Form.Group>
-        </Form.Group>
-        <Form.Group>
-          <Form.Check
-
-            type="checkbox"
-            label="Click here if you want to make this meme public"
-            value={visibility}
-            checked={visibility}
-            onChange={handleVisibility}
-          />
-        </Form.Group>
       </Form>
     </Modal.Body>
     <Modal.Footer>
@@ -483,32 +483,32 @@ function CopyMemeModal(props) {
 
 
   //Contiene il colore del meme in fase di creazione
-  const [color, setColor] = useState(location.state ? location.state.color : "Black");
+  const [color, setColor] = useState(location.state ? location.state.color : "dark-Black");
   const handleColor = (value) => {
-    switch(value){
+    switch (value) {
       case "Yellow":
-        setColor("warning");
+        setColor("warning-Yellow");
         break;
       case "Red":
-        setColor("danger");
+        setColor("danger-Red");
         break;
       case "White":
-        setColor("light");
+        setColor("light-White");
         break;
       case "Blue":
-        setColor("primary");
+        setColor("primary-Blue");
         break;
       case "Light Blue":
-        setColor("info");
+        setColor("info-Light Blue");
         break;
       case "Green":
-        setColor("success");
+        setColor("success-Green");
         break;
       case "Violet":
-        setColor("secondary");
+        setColor("secondary-Violet");
         break;
       default:
-        setColor("dark");
+        setColor("dark-Black");
         break;
     }
   }
@@ -563,7 +563,7 @@ function CopyMemeModal(props) {
     //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
     if (sentences && sentences.length !== 0) {
       sentences.map((s) => {
-        if (s.length > 100) {
+        if (s.length > 200) {
           err = true;
           setError("You seem to have written too large text, please edit it");
         }
@@ -578,7 +578,7 @@ function CopyMemeModal(props) {
     if (!title || title.length < 5) {
       err = true;
       setError("The title is mandatory and must contain at least 5 characters")
-    } else if (title.length > 20) {
+    } else if (title.length > 100) {
       err = true;
       setError("Title is too large, please edit it");
     }
@@ -594,7 +594,7 @@ function CopyMemeModal(props) {
             position: s.position
           }
         })],
-        font: font, color:  color.split("-")[0], visibility: visibility,
+        font: font, color: color.split("-")[0], visibility: visibility,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         templateId: currentMemeTemplate.id
       };
@@ -657,50 +657,50 @@ function CopyMemeModal(props) {
                   </Form.Group>
                 })}
               </Container>
+              <Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>Choose your favorite font?</Form.Label>
+                  <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
+                    <option>font1</option>
+                    <option>font2</option>
+                    <option>font3</option>
+                    <option>font4</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Group>
+              <Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect2">
+                  <Form.Label>Choose a color for the text?</Form.Label>
+                  <Form.Control as="select" value={color.split("-")[1]} onChange={(ev) => handleColor(ev.target.value)}>
+                    <option>Black</option>
+                    <option>White</option>
+                    <option>Red</option>
+                    <option>Blue</option>
+                    <option>Light Blue</option>
+                    <option>Yellow</option>
+                    <option>Green</option>
+                    <option>Violet</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form.Group>
+              <Form.Group>
+                <Form.Check
+
+                  type="checkbox"
+                  label="Click here if you want to make this meme public"
+                  value={visibility}
+                  checked={visibility}
+                  onChange={handleVisibility}
+                  //Se il meme è porprio la visibilità può essere cambiata in ogni caso
+                  //Se il meme non è proprio, la visibilità può essere cambiato solo se è pubblico
+                  //Si noti che non posso usare lo stato visibility, altrimenti al momento che questo cambia è diventa privato non riesco
+                  //più a cambiarlo anche se all'inizio era pubblico
+                  disabled={props.currentUser.id === currentMeme.creator.id ||
+                    (location.state.currentMeme.visibility === 1 && props.currentUser.id !== currentMeme.creator.id) ? false : true}
+                />
+              </Form.Group>
             </> : null
         }
-        <Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect1">
-            <Form.Label>Choose your favorite font?</Form.Label>
-            <Form.Control as="select" value={font} onChange={(ev) => setFont(ev.target.value)}>
-              <option>font1</option>
-              <option>font2</option>
-              <option>font3</option>
-              <option>font4</option>
-            </Form.Control>
-          </Form.Group>
-        </Form.Group>
-        <Form.Group>
-          <Form.Group controlId="exampleForm.ControlSelect2">
-            <Form.Label>Choose a color for the text?</Form.Label>
-            <Form.Control as="select" value={color} onChange={(ev) => handleColor(ev.target.value)}>
-              <option>Black</option>
-              <option>White</option>
-              <option>Red</option>
-              <option>Blue</option>
-              <option>Light Blue</option>
-              <option>Yellow</option>
-              <option>Green</option>
-              <option>Violet</option>
-            </Form.Control>
-          </Form.Group>
-        </Form.Group>
-        <Form.Group>
-          <Form.Check
-
-            type="checkbox"
-            label="Click here if you want to make this meme public"
-            value={visibility}
-            checked={visibility}
-            onChange={handleVisibility}
-            //Se il meme è porprio la visibilità può essere cambiata in ogni caso
-            //Se il meme non è proprio, la visibilità può essere cambiato solo se è pubblico
-            //Si noti che non posso usare lo stato visibility, altrimenti al momento che questo cambia è diventa privato non riesco
-            //più a cambiarlo anche se all'inizio era pubblico
-            disabled={props.currentUser.id === currentMeme.creator.id ||
-              (location.state.currentMeme.visibility === 1 && props.currentUser.id !== currentMeme.creator.id) ? false : true}
-          />
-        </Form.Group>
       </Form>
     </Modal.Body>
     <Modal.Footer>
