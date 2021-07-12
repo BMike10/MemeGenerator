@@ -138,19 +138,19 @@ app.get('/api/memeTemplate', async (req, res) => {
 })
 
 
-//GET /api/creator/:creatorId/meme
-app.get('/api/creator/:creatorId/meme', async (req, res) => {
-  //VALIDATION REQUIRED
-  try {
-    const result = await meme_dao.getMemeByCreator(req.params.creatorId);
-    if (result.error)
-      res.status(404).json(result);
-    else
-      res.status(200).json(result);
-  } catch (err) {
-    res.status(500).end();
-  }
-})
+// //GET /api/creator/:creatorId/meme
+// app.get('/api/creator/:creatorId/meme', async (req, res) => {
+//   //VALIDATION REQUIRED
+//   try {
+//     const result = await meme_dao.getMemeByCreator(req.params.creatorId);
+//     if (result.error)
+//       res.status(404).json(result);
+//     else
+//       res.status(200).json(result);
+//   } catch (err) {
+//     res.status(500).end();
+//   }
+// })
 
 //POST:
 
@@ -199,7 +199,7 @@ app.post('/api/meme', isLoggedIn, [
     color: req.body.color,
     font: req.body.font,
     templateId: req.body.templateId,
-    creatorId: req.body.creatorId
+    creatorId: req.user.id
   };
 
   try {

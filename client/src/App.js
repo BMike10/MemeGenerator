@@ -251,8 +251,8 @@ function App() {
             <Container fluid className="vh-100">
               <Row className="h-100">
                 <Container fluid className="p-4">
-                  <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                  {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> : <MemeList meme={meme} memeTemplates={memeTemplates} />}
+                  <h2 className="fs-1">All the funniest meme are here! Enjoy with us</h2>
+                  {loading ? <span>🕗 Please wait, loading meme... 🕗</span> : <MemeList meme={meme} memeTemplates={memeTemplates} />}
                 </Container>
               </Row>
             </Container>
@@ -271,10 +271,10 @@ function App() {
               <Container fluid className="vh-100">
                 <Row className="h-100">
                   <Container fluid className="p-4">
-                    <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
-                    {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> : <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates} />}
+                    <h2 className="fs-1">All the funniest meme are here! Enjoy with us</h2>
+                    {loading ? <span>🕗 Please wait, loading meme... 🕗</span> : <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates} />}
                     <h2 className="fs-1">My funny meme!</h2>
-                    {loading ? <span>🕗 Please wait, loading your exams... 🕗</span> :
+                    {loading ? <span>🕗 Please wait, loading meme... 🕗</span> :
                       <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
                         id: undefined, title: "Create new meme", img: "make-meme.jpg",
                         sentences: [], font: "font2", color: "",
@@ -309,11 +309,11 @@ function App() {
               <Container fluid className="vh-100">
                 <Row className="h-100">
                   <Container fluid className="p-4">
-                    <h2 className="fs-1">All meme more funny is here! Enjoy with us</h2>
+                    <h2 className="fs-1">All the funniest meme are here! Enjoy with us</h2>
                     <MemeList meme={meme} loggedIn={loggedIn} memeTemplates={memeTemplates}
                       path={"/"}
                     />
-                    <h2 className="fs-1">My funny meme!</h2>
+                    <h2 className="fs-1">My funniest meme!</h2>
                     <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
                       id: undefined, title: "Create new meme", img: "make-meme.jpg",
                       sentences: [], font: "font2", color: "",

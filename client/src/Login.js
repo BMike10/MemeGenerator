@@ -13,7 +13,6 @@ function LoginForm(props) {
         setErrorMessage('');
         const credentials = { username: username, password: password };
 
-        // SOME VALIDATION, ADD MORE!!!
         let valid = true;
         if (username === '' || password === '' || password.length < 6)
             valid = false;
