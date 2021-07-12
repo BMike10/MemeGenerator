@@ -156,7 +156,7 @@ app.get('/api/memeTemplate', async (req, res) => {
 
 //POST /api/meme -> Nuovo meme
 app.post('/api/meme', isLoggedIn, [
-  check('visibility').isInt({ min: 0, max: 1 }),
+  check('public').isInt({ min: 0, max: 1 }),
   check('templateId').isIn([1, 2, 3, 4, 5, 6]),
   check('creatorId').isInt({ min: 0 }),
   check('title').isLength({ min: 1, max: 100 }).withMessage("Title is too large(>100) or does not exist "),
@@ -195,7 +195,7 @@ app.post('/api/meme', isLoggedIn, [
   }
   const meme = {
     title: req.body.title,
-    visibility: req.body.visibility,
+    public: req.body.public,
     color: req.body.color,
     font: req.body.font,
     templateId: req.body.templateId,

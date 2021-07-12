@@ -131,7 +131,7 @@ function App() {
     });
     API.addMeme({
       title: m.title, img: m.img,
-      font: m.font, color: m.color, visibility: m.visibility,
+      font: m.font, color: m.color, public: m.public,
       creatorId: m.creator.id,
       templateId: m.templateId,
       sentences: sentences
@@ -278,7 +278,7 @@ function App() {
                       <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
                         id: undefined, title: "Create new meme", img: "make-meme.jpg",
                         sentences: [], font: "font2", color: "",
-                        visibility: 1, creator: { id: currentUser.id, username: currentUser.username }
+                        public: 1, creator: { id: currentUser.id, username: currentUser.username }
                       })}
                         loggedIn={loggedIn}
                         memeTemplates={memeTemplates}
@@ -317,7 +317,7 @@ function App() {
                     <MemeList meme={meme.filter((m) => m.creator.id === currentUser.id).concat({
                       id: undefined, title: "Create new meme", img: "make-meme.jpg",
                       sentences: [], font: "font2", color: "",
-                      visibility: 1, creator: { id: currentUser.id, username: currentUser.username }
+                      public: 1, creator: { id: currentUser.id, username: currentUser.username }
                     })}
                       loggedIn={loggedIn}
                       memeTemplates={memeTemplates}

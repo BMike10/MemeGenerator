@@ -113,7 +113,7 @@ function MemeCard(props) {
         {props.loggedIn && props.meme.id ? <Link to={{
           pathname: "/home/copyMeme",
           state: {
-            currentMeme: props.meme, modalShowCopyMeme: true, id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, visibility: props.meme.visibility,
+            currentMeme: props.meme, modalShowCopyMeme: true, id: props.meme.id, title: props.meme.title, color: props.meme.color, font: props.meme.font, public: props.meme.public,
             sentences: props.meme.sentences.map((s) => {
               return s.text;
             }), currentMemeTemplate: props.memeTemplate
@@ -192,9 +192,9 @@ function NewMemeModal(props) {
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(0);
-  const handleVisibility = () => {
-    setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
+  const [public, setPublic] = useState(0);
+  const handlepublic = () => {
+    setPublic(oldPublic => oldPublic === 1 ? 0 : 1);
   }
 
 
@@ -320,7 +320,7 @@ function NewMemeModal(props) {
             position: s.position
           }
         }),
-        font: font, color: color.split("-")[0], visibility: visibility,
+        font: font, color: color.split("-")[0], public: public,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         //Viene passato lo user corrente per cui cambia il proprietario
         templateId: currentMemeTemplate.id,
@@ -336,7 +336,7 @@ function NewMemeModal(props) {
       //Questo può essere fatto anche nel caso in cui non si fa il submit, ma può essere utile mantenere lo stato precedente in quel caso
       setColor("");
       setTitle("");
-      setVisibility(0);
+      setPublic(0);
       setCurrentMemeTemplate({});
       setFont("");
       setSentences([]);
@@ -438,9 +438,9 @@ function NewMemeModal(props) {
 
                   type="checkbox"
                   label="Click here if you want to make this meme public"
-                  value={visibility}
-                  checked={visibility}
-                  onChange={handleVisibility}
+                  value={public}
+                  checked={public}
+                  onChange={handlePublic}
                 />
               </Form.Group>
             </> : null
@@ -478,9 +478,9 @@ function CopyMemeModal(props) {
 
 
   //Contiene la visibilità del meme: 0->Privato ; 1->Pubblico
-  const [visibility, setVisibility] = useState(location.state ? location.state.visibility : 0);
-  const handleVisibility = () => {
-    setVisibility(oldVisibility => oldVisibility === 1 ? 0 : 1);
+  const [public, setPublic] = useState(location.state ? location.state.public : 0);
+  const handlePublic = () => {
+    setPublic(oldPublic => oldPublic === 1 ? 0 : 1);
   }
 
 
@@ -596,7 +596,7 @@ function CopyMemeModal(props) {
             position: s.position
           }
         })],
-        font: font, color: color.split("-")[0], visibility: visibility,
+        font: font, color: color.split("-")[0], public: public,
         creator: { id: props.currentUser.id, username: props.currentUser.username },
         templateId: currentMemeTemplate.id
       };
@@ -690,15 +690,15 @@ function CopyMemeModal(props) {
 
                   type="checkbox"
                   label="Click here if you want to make this meme public"
-                  value={visibility}
-                  checked={visibility}
-                  onChange={handleVisibility}
+                  value={public}
+                  checked={public}
+                  onChange={handlePublic}
                   //Se il meme è porprio la visibilità può essere cambiata in ogni caso
                   //Se il meme non è proprio, la visibilità può essere cambiato solo se è pubblico
-                  //Si noti che non posso usare lo stato visibility, altrimenti al momento che questo cambia è diventa privato non riesco
+                  //Si noti che non posso usare lo stato public, altrimenti al momento che questo cambia è diventa privato non riesco
                   //più a cambiarlo anche se all'inizio era pubblico
                   disabled={props.currentUser.id === currentMeme.creator.id ||
-                    (location.state.currentMeme.visibility === 1 && props.currentUser.id !== currentMeme.creator.id) ? false : true}
+                    (location.state.currentMeme.public === 1 && props.currentUser.id !== currentMeme.creator.id) ? false : true}
                 />
               </Form.Group>
             </> : null

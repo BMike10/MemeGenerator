@@ -4,7 +4,7 @@ const db = require('./db');
 // Get all meme -> Meme is built from many table
 // exports.listMeme = () => {
 //     return new Promise((resolve, reject) => {
-//         const sql = `SELECT m.id, m.title, mt.img, m.visibility, m.color, m.font, m.templateId, 
+//         const sql = `SELECT m.id, m.title, mt.img, m.public, m.color, m.font, m.templateId, 
 //             c.id as creatorId, c.username as creatorUsername, st.position, s.text 
 //          FROM Meme m, MemeTemplate mt, Creators c, SentencesTemplate st, SentencesMeme s
 //          WHERE m.templateId = mt.id AND m.creatorId = c.id AND mt.id = st.templateId AND st.id = s.sentencesTemplateId AND s.memeId = m.id`;
@@ -37,7 +37,7 @@ const db = require('./db');
 //                         //prendiamo sempre il primo che deve esistere sempre
 //                         title: rows[i].title,            //Stesso discorso
 //                         img: rows[i].img,                //Stesso discorso
-//                         visibility: rows[i].visibility,
+//                         public: rows[i].public,
 //                         color: rows[i].color,
 //                         font: rows[i].font,
 //                         templateId: rows[i].templateId,
@@ -101,7 +101,7 @@ exports.listMemeTemplate = () => {
 
 exports.listMeme = () => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
+        const sql = `SELECT m.id, m.title, m.public, m.color, m.font, m.templateId, 
         m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId, s.id as sentenceId
         FROM Meme m, Creators c, SentencesMeme s
         WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId`;
@@ -131,7 +131,7 @@ exports.listMeme = () => {
                         id: rows[i].id,                  //Il meme è unico, anche se avro tante righe quante sono le sentences di ogni template, 
                         //prendiamo sempre il primo che deve esistere sempre
                         title: rows[i].title,            //Stesso discors
-                        visibility: rows[i].visibility,
+                        public: rows[i].public,
                         color: rows[i].color,
                         font: rows[i].font,
                         templateId: rows[i].templateId,
@@ -147,10 +147,10 @@ exports.listMeme = () => {
 
 exports.getPublicMeme = () => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
+        const sql = `SELECT m.id, m.title, m.public, m.color, m.font, m.templateId, 
         m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId, s.id as sentenceId
         FROM Meme m, Creators c, SentencesMeme s
-        WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId AND m.visibility=1`;
+        WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId AND m.public=1`;
         db.all(sql, (err, rows) => {
             if (err) {
                 reject(err);
@@ -170,7 +170,7 @@ exports.getPublicMeme = () => {
                     meme.push({
                         id: rows[i].id,                 
                         title: rows[i].title,          
-                        visibility: rows[i].visibility,
+                        public: rows[i].public,
                         color: rows[i].color,
                         font: rows[i].font,
                         templateId: rows[i].templateId,
@@ -187,7 +187,7 @@ exports.getPublicMeme = () => {
 // get the meme identified by {id} -> To delete, update ecc
 exports.getMemeByCreator = (userId) => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT m.id, m.title, m.visibility, m.color, m.font, m.templateId, 
+        const sql = `SELECT m.id, m.title, m.public, m.color, m.font, m.templateId, 
         m.creatorId, c.username as creatorUsername, s.text, s.sentencesTemplateId
         FROM Meme m, Creators c, SentencesMeme s
         WHERE m.creatorId = c.id AND m.id = s.memeId AND s.sentencesTemplateId AND c.id = ?`;
@@ -217,7 +217,7 @@ exports.getMemeByCreator = (userId) => {
                         id: rows[i].id,                  //Il meme è unico, anche se avro tante righe quante sono le sentences di ogni template, 
                         //prendiamo sempre il primo che deve esistere sempre
                         title: rows[i].title,            //Stesso discors
-                        visibility: rows[i].visibility,
+                        public: rows[i].public,
                         color: rows[i].color,
                         font: rows[i].font,
                         templateId: rows[i].templateId,
@@ -235,8 +235,8 @@ exports.getMemeByCreator = (userId) => {
 // add a new meme, da verificare che sia loggato e fare VALIDAZIONE
 exports.createMeme = (meme,userId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO Meme(title, visibility, color, font, templateId, creatorId) VALUES(?, ?, ?, ?, ?, ?)'
-        db.run(sql, [ meme.title, meme.visibility, meme.color, meme.font, meme.templateId, userId], function (err) {
+        const sql = 'INSERT INTO Meme(title, public, color, font, templateId, creatorId) VALUES(?, ?, ?, ?, ?, ?)'
+        db.run(sql, [ meme.title, meme.public, meme.color, meme.font, meme.templateId, userId], function (err) {
             if (err) {
                 reject(err);
                 return;
