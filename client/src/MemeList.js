@@ -74,6 +74,8 @@ function MemeList(props) {
         }
 
       </ListGroup>
+      {props.loggedIn? <Button variant="primary" size="lg" className="fixed-right-bottom" onClick={() => handleModalNewMeme(true)}>+</Button> : null }
+      
     </>
   )
 }
