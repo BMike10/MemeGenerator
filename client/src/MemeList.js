@@ -6,12 +6,9 @@ import { Link, useLocation, useHistory } from 'react-router-dom';
 
 function MemeList(props) {
 
-  //Permette di salvare uno stato da usare quando sto copiando un meme
-  const location = useLocation();
-
 
   //Contiene il meme selezionato e che deve essere visualizzato
-  const [currentMeme, setCurrentMeme] = useState(location.state ? location.state.currentMeme : {});
+  const [currentMeme, setCurrentMeme] = useState({});
   const handleChangeMeme = (meme) => {
     setCurrentMeme(meme);
     setModalShowSelectedMeme(true);
@@ -291,7 +288,7 @@ function NewMemeModal(props) {
     //Almeno un testo deve essere presente(controllo sia undefined sia vettore vuoto) +
     //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
     if (sentences && sentences.length !== 0) {
-      sentences.map((s) => {
+      sentences.forEach((s) => {
         if (s.length > 200) {
           err = true;
           setError("You seem to have written too large text, please edit it");
@@ -317,7 +314,6 @@ function NewMemeModal(props) {
       const meme = {
         title: title, img: currentMemeTemplate.img,
         sentences: currentMemeTemplate.sentences.map((s, index) => {
-          console.log("hey: " + index);
           return {
             sentencesTemplateId: s.id,
             text: sentences[index] ? sentences[index] : "",
@@ -376,7 +372,7 @@ function NewMemeModal(props) {
           <Form.Label>Choose a template to start...</Form.Label>
           <Container>
             {props.memeTemplates && props.memeTemplates.map((mT, index) => {
-              return <img width={50} height={50} key={index}
+              return <img width={50} height={50} key={index} alt={"template_n." + index}
                 src={mT.img} onClick={() => { handleChangeTemplate(mT) }}></img>
             })}
           </Container>
@@ -387,7 +383,7 @@ function NewMemeModal(props) {
           currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
             <>
               <figure className="position-relative memeContainer">
-                <img className="img-fluid" src={currentMemeTemplate.img} ></img>
+                <img className="img-fluid" src={currentMemeTemplate.img} alt={"img_." + currentMemeTemplate.nome}></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
                   return <figcaption className={s.position + " " + font + " text-" + color.split("-")[0]} key={index}>
                     {sentences[index]}</figcaption>
@@ -398,7 +394,7 @@ function NewMemeModal(props) {
               <Container fluid >
                 {/* Per ognuno dei testi del template selezionato visualizzo il form */}
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}'>
+                  return <Form.Group as={Row} key={index} >
                     <Form.Label column sm="2">
                       Text n.{index}
                     </Form.Label>
@@ -568,7 +564,7 @@ function CopyMemeModal(props) {
     //Almeno un testo deve essere presente(controllo sia undefined sia vettore vuoto) +
     //+ Almeno un testo non deve essere vuoto + Ogni testo non deve superare tot caratteri
     if (sentences && sentences.length !== 0) {
-      sentences.map((s) => {
+      sentences.forEach((s) => {
         if (s.length > 200) {
           err = true;
           setError("You seem to have written too large text, please edit it");
@@ -649,7 +645,7 @@ function CopyMemeModal(props) {
           currentMemeTemplate && currentMemeTemplate.sentences && sentences ?
             <>
               <figure className="position-relative memeContainer">
-                <img className="img-fluid" src={"/" + currentMemeTemplate.img} ></img>
+                <img className="img-fluid" src={"/" + currentMemeTemplate.img} alt={currentMemeTemplate.nome}></img>
                 {currentMemeTemplate.sentences.map((s, index) => {
                   return <figcaption className={s.position + " " + font + " text-" + color.split("-")[0]} key={index}>
                     {sentences[index]}</figcaption>
@@ -660,7 +656,7 @@ function CopyMemeModal(props) {
               <Container fluid >
                 {/* Per ognuno dei testi del template selezionato visualizzo il form */}
                 {currentMemeTemplate.sentences.map((s, index) => {
-                  return <Form.Group as={Row} controlId='formPlaintextSentences${i}' key={index}>
+                  return <Form.Group as={Row}  key={index}>
                     <Form.Label column sm="2">
                       Text n.{index}
                     </Form.Label>

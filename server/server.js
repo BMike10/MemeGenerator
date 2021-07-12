@@ -138,19 +138,7 @@ app.get('/api/memeTemplate', async (req, res) => {
 })
 
 
-// //GET /api/creator/:creatorId/meme
-// app.get('/api/creator/:creatorId/meme', async (req, res) => {
-//   //VALIDATION REQUIRED
-//   try {
-//     const result = await meme_dao.getMemeByCreator(req.params.creatorId);
-//     if (result.error)
-//       res.status(404).json(result);
-//     else
-//       res.status(200).json(result);
-//   } catch (err) {
-//     res.status(500).end();
-//   }
-// })
+
 
 //POST:
 
@@ -228,36 +216,6 @@ app.post('/api/meme', isLoggedIn, [
 
 })
 
-//   //POST /api/sentences -> Nuovo meme
-// app.post('/api/sentences', isLoggedIn, [
-//   check('memeId').isInt({ min: 0 }),
-//   check('sentencesTemplateId').isInt({ min: 0 }),
-//   check('text').isLength({ min: 0, max: 100 }),
-// ], async (req, res) => {
-//     //da controllare anche che almeno uno dei tesi abbia almeno un testo
-
-//     //Se qualche check non è andato a buon fine
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(422).json({ errors: errors.array() })
-//     }
-
-//     const sentence = {
-//       text: req.body.text,
-//       memeId: req.body.memeId,
-//       sentencesTemplateId: req.body.sentencesTemplateId
-//     };
-
-//     try {
-//       await meme_dao.createSentence(sentence);
-//       //TimeOut per visualizzare i momenti di attesta attraverso uno stato 
-//       setTimeout(() => res.status(201).end(), 2000);
-
-//     } catch (err) {
-//       res.status(503).json({ error: `Database error during creation of a meme.` });
-//     }
-
-//   })
 
 
 //DELETE
@@ -284,20 +242,7 @@ app.delete('/api/meme/:id', isLoggedIn, param('id').isInt({ min: 1 }), async fun
   }
 });
 
-// // DELETE /api/sentences/:id
-// app.delete('/api/sentences/:id', isLoggedIn, param('id').isInt({ min: 1 }), async function (req, res) {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res.status(422).json({ errors: errors.array() })
-//   }
-//   try {
-//     await meme_dao.deleteSentence(req.params.id);
-//     res.status(204).end();
 
-//   } catch (err) {
-//     res.status(503).json({ error: `Database error during the deletion of meme ${req.params.id}.` });
-//   }
-// });
 
 
 /*** Users APIs ***/
