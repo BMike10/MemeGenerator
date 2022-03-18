@@ -198,13 +198,12 @@ The entire request procedure is entrusted to the external library bcrypt.
 
 
 ## Screenshot
-
-![Screenshot](./img_README/home(noLogged).png)
-![Screenshot](./img_READMEhome_selectedMeme(noLogged).png)
-![Screenshot](./img_README/home1(Logged).PNG)
-![Screenshot](./img_README/home2(Logged).PNG)
-![Screenshot](./img_README/homeCreate1(Logged).png)
-![Screenshot](./img_README/homeCreate2(Logged).png)
+![Screenshot](client/public/img_README/home(noLogged).PNG)
+![Screenshot](client/public/img_READMEhome_selectedMeme(noLogged).PNG)
+![Screenshot](client/public/img_README/home1(Logged).PNG)
+![Screenshot](client/public/img_README/home2(Logged).PNG)
+![Screenshot](client/public/img_README/home_Create1(Logged).PNG)
+![Screenshot](client/public/img_README/home_Create2(Logged).PNG)
 
 
 ## Users Credentials
